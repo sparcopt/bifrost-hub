@@ -1,0 +1,86 @@
+﻿@page "/worldDetails"
+@using Data.Gateway.OdinEye
+@using OdinEye.Models.Api
+@inject IOdinEyeApiClient odinApiClient
+
+<MudGrid Class="mb-2" Style="height: 350px">
+    <MudItem xs="12" sm="6" Class="d-flex flex-column">
+        <MudPaper Class="pa-4 flex-grow-1 rounded-lg">
+            <MudText Typo="Typo.h5" Class="mb-3">World details</MudText>
+            <MudStack Spacing="1">
+                <MudStack Row="true">
+                    <MudIcon Icon="@Icons.Material.Filled.Title" Size="MudBlazor.Size.Small"/>
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1" Style="width: 150px">Name</MudText>
+                    <MudText Typo="Typo.body1">@worldDetails.WorldName</MudText>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudIcon Icon="@Icons.Material.Filled.AutoAwesome" Size="MudBlazor.Size.Small"/>
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1" Style="width: 150px">Seed</MudText>
+                    <MudText Typo="Typo.body1">@worldDetails.SeedName</MudText>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudIcon Icon="@Icons.Material.Filled.Today" Size="MudBlazor.Size.Small"/>
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1" Style="width: 150px">Day</MudText>
+                    <MudText Typo="Typo.body1">@worldDetails.DayNumber</MudText>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudIcon Icon="@GetDayTimeIcon()" Size="MudBlazor.Size.Small"/>
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1" Style="width: 150px">Day time</MudText>
+                    <MudText Typo="Typo.body1">@worldDetails.DayCycle</MudText>
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@foreach (var key in worldDetails.WorldKeys)
+{
+    <MudText Typo="Typo.h6">World key: @key</MudText>
+}
+
+
+@* <ApexChart TItem="MyData" *@
+@*                Title="Sample Data"> *@
+@* *@
+@*         <ApexPointSeries TItem="MyData" *@
+@*                          Items="Data" *@
+@*                          Name="Net Profit" *@
+@*                          SeriesType="SeriesType.Bar" *@
+@*                          XValue="e => e.Category" *@
+@*                          YValue="e=> e.NetProfit" /> *@
+@* *@
+@*         <ApexPointSeries TItem="MyData" *@
+@*                          Items="Data" *@
+@*                          Name="Revenue" *@
+@*                          SeriesType="SeriesType.Bar" *@
+@*                          XValue="e => e.Category" *@
+@*                          YValue="e=> e.Revenue" /> *@
+@*     </ApexChart> *@
+
+@code {
+    private WorldDetails worldDetails = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        worldDetails = await odinApiClient.GetWorldDetails();
+        
+        Data.Add(new MyData { Category = "Jan", NetProfit = 12, Revenue = 33 });
+        Data.Add(new MyData { Category = "Feb", NetProfit = 43, Revenue = 42 });
+        Data.Add(new MyData { Category = "Mar", NetProfit = 112, Revenue = 23 });
+    }
+    
+    private List<MyData> Data { get; set; } = new();
+
+    public class MyData
+    {
+        public string Category { get; set; }
+        public int NetProfit { get; set; }
+        public int Revenue { get; set; }
+    }
+    
+    private string GetDayTimeIcon()
+    {
+        var dayCycle = worldDetails.DayCycle;
+        return dayCycle == "day" ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.Nightlight;
+    }
+}

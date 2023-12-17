@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Application", "src\Web.Application\Web.Application.csproj", "{101ACE87-B35C-41E8-9446-B76C88CFBFDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Gateway", "src\Data.Gateway\Data.Gateway.csproj", "{BEC6C0B9-43F9-43FF-8121-D068FBBFE20F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{101ACE87-B35C-41E8-9446-B76C88CFBFDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{101ACE87-B35C-41E8-9446-B76C88CFBFDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{101ACE87-B35C-41E8-9446-B76C88CFBFDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{101ACE87-B35C-41E8-9446-B76C88CFBFDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEC6C0B9-43F9-43FF-8121-D068FBBFE20F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEC6C0B9-43F9-43FF-8121-D068FBBFE20F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEC6C0B9-43F9-43FF-8121-D068FBBFE20F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEC6C0B9-43F9-43FF-8121-D068FBBFE20F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
