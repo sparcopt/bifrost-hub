@@ -22,8 +22,4 @@
       <ProjectReference Include="..\Data.Gateway\Data.Gateway.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="wwwroot\steamAvatars\" />
-    </ItemGroup>
-
 </Project>
