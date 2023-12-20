@@ -11,14 +11,14 @@ RUN for file in $(ls *.csproj); do mkdir -p src/${file%.*}/ && mv $file src/${fi
 
 RUN dotnet restore BifrostHub.sln --no-cache
 COPY . .
-RUN dotnet build --no-restore --configuration Release BifrostHub.sln -p:Version=${RELEASE_VERSION}
+RUN dotnet build --no-restore --configuration Release BifrostHub.sln -p:Version=$RELEASE_VERSION
 
 WORKDIR /app/src/Web.Application
-RUN dotnet publish "Web.Application.csproj" -c Release --no-build --no-restore -o /app/publish -p:Version=${RELEASE_VERSION}
+RUN dotnet publish "Web.Application.csproj" -c Release --no-build --no-restore -o /app/publish -p:Version=$RELEASE_VERSION
 
 FROM ${DOTNET_RUNTIME_IMAGE}
 WORKDIR /app
 COPY --from=build-env /app/publish .
-ENV ASPNETCORE_URLS=http://+:9875
-EXPOSE 9875
+ENV ASPNETCORE_URLS=http://+:5134
+EXPOSE 5134
 ENTRYPOINT ["dotnet", "Web.Application.dll"]

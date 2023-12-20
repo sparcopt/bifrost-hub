@@ -1,0 +1,14 @@
+﻿version: "3.4"
+
+services:
+
+  bifrosthub:
+    build:
+      context: .
+      args:
+        RELEASE_VERSION: 0.0.0-local
+    ports:
+      - 5134:5134
+    environment:
+      - OdinEye__ApiUrl=
+      - Steam__ApiKey=
