@@ -14,5 +14,5 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: false
-          tags: sparcopt/bifrosthub:build
-          build-args: RELEASE_VERSION=build
+          tags: sparcopt/bifrosthub:0.0.0-main
+          build-args: RELEASE_VERSION=0.0.0-main
