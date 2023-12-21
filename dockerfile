@@ -1,16 +1,11 @@
-﻿ARG DOTNET_SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:6.0
-ARG DOTNET_RUNTIME_IMAGE=mcr.microsoft.com/dotnet/aspnet:6.0
+﻿ARG DOTNET_SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:6.0-bullseye-slim-arm64v8
+ARG DOTNET_RUNTIME_IMAGE=mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim-arm64v8
 
 FROM ${DOTNET_SDK_IMAGE} AS build-env
 ARG RELEASE_VERSION
 WORKDIR /app
-
-COPY BifrostHub.sln BifrostHub.sln
-COPY src/*/*.csproj ./
-RUN for file in $(ls *.csproj); do mkdir -p src/${file%.*}/ && mv $file src/${file%.*}/; done
-
-RUN dotnet restore BifrostHub.sln --no-cache
 COPY . .
+RUN dotnet restore BifrostHub.sln --no-cache
 RUN dotnet build --no-restore --configuration Release BifrostHub.sln -p:Version=$RELEASE_VERSION
 
 WORKDIR /app/src/Web.Application
