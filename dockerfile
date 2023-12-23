@@ -14,6 +14,7 @@ RUN dotnet publish "Web.Application.csproj" -c Release --no-build --no-restore -
 FROM ${DOTNET_RUNTIME_IMAGE}
 WORKDIR /app
 COPY --from=build-env /app/publish .
-ENV ASPNETCORE_URLS=http://+:5134
+ENV ASPNETCORE_URLS=http://+:5134 \
+    ASPNETCORE_ENVIRONMENT=Docker
 EXPOSE 5134
 ENTRYPOINT ["dotnet", "Web.Application.dll"]
