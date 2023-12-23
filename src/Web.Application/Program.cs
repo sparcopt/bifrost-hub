@@ -17,7 +17,7 @@ builder.Services.AddLogging();
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
-        .Enrich.WithProperty("Version", typeof(Program).Assembly.GetName().Version));
+        .Enrich.WithProperty("Version", context.Configuration["APP_VERSION"]));
 
 builder.Services
     .AddOptions<OdinEyeOptions>()

@@ -9,9 +9,8 @@ services:
         RELEASE_VERSION: 0.0.0-local
     ports:
       - "5134:5134"
-    environment:
-      - OdinEye__ApiUrl=
-      - Steam__ApiKey=
+    volumes:
+      - ./src/Web.Application/appsettings.Docker.json:/app/appsettings.Docker.json
         
   seq:
     image: datalust/seq:latest

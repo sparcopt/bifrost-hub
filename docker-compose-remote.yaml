@@ -6,9 +6,8 @@ services:
     image: sparcopt/bifrosthub:0.0.1-beta.11
     ports:
       - "5134:5134"
-    environment:
-      - OdinEye__ApiUrl=
-      - Steam__ApiKey=
+    volumes:
+      - ./src/Web.Application/appsettings.Docker.json:/app/appsettings.Docker.json
         
   seq:
     image: datalust/seq:latest
