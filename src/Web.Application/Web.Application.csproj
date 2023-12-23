@@ -10,6 +10,10 @@
       <PackageReference Include="Blazor-ApexCharts" Version="2.1.0" />
       <PackageReference Include="MudBlazor" Version="6.11.1" />
       <PackageReference Include="protobuf-net" Version="3.2.30" />
+      <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+      <PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
+      <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
+      <PackageReference Include="Serilog.Sinks.Seq" Version="6.0.0" />
       <PackageReference Include="Websocket.Client" Version="5.0.0" />
     </ItemGroup>
 
