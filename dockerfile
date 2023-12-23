@@ -12,9 +12,11 @@ WORKDIR /app/src/Web.Application
 RUN dotnet publish "Web.Application.csproj" -c Release --no-build --no-restore -o /app/publish -p:Version=$RELEASE_VERSION
 
 FROM ${DOTNET_RUNTIME_IMAGE}
+ARG RELEASE_VERSION
 WORKDIR /app
 COPY --from=build-env /app/publish .
 ENV ASPNETCORE_URLS=http://+:5134 \
-    ASPNETCORE_ENVIRONMENT=Docker
+    ASPNETCORE_ENVIRONMENT=Docker \
+    APP_VERSION=$RELEASE_VERSION
 EXPOSE 5134
 ENTRYPOINT ["dotnet", "Web.Application.dll"]
