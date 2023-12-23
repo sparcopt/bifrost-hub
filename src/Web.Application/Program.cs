@@ -3,6 +3,7 @@ using Data.Gateway.OdinEye;
 using Data.Gateway.Steam;
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
+using Serilog;
 using Web.Application.Services;
 using Websocket.Client;
 
@@ -12,6 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMudServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddLogging();
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration)
+        .Enrich.WithProperty("Version", typeof(Program).Assembly.GetName().Version));
 
 builder.Services
     .AddOptions<OdinEyeOptions>()
@@ -27,6 +33,7 @@ builder.Services
 
 builder.Services.AddSingleton<IOdinEyeWebSocketClient>(provider =>
 {
+    var logger = provider.GetRequiredService<ILogger<OdinEyeWebSocketClient>>();
     var options = provider.GetRequiredService<IOptions<OdinEyeOptions>>().Value;
     var apiUri = new Uri(options.ApiUrl);
     var webSocketUri = new Uri($"ws://{apiUri.Host}:{apiUri.Port}{options.WebSocketPath}");
@@ -35,7 +42,7 @@ builder.Services.AddSingleton<IOdinEyeWebSocketClient>(provider =>
     webSocketClient.Name = "BifrostHubWsClient";
     webSocketClient.ReconnectTimeout = TimeSpan.FromSeconds(options.WebSocketReconnectTimeout);
     webSocketClient.ErrorReconnectTimeout = TimeSpan.FromSeconds(options.WebSocketErrorReconnectTimeout);
-    return new OdinEyeWebSocketClient(webSocketClient);
+    return new OdinEyeWebSocketClient(webSocketClient, logger);
 });
 
 builder.Services.AddHttpClient<IOdinEyeApiClient, OdinEyeApiClient>((provider, client) =>

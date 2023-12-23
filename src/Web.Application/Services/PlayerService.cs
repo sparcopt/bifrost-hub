@@ -12,17 +12,20 @@ public class PlayerService : IPlayerService
     private readonly ISteamApiClient steamApiClient;
     private readonly IFileService fileService;
     private readonly IMemoryCache steamProfileCache;
+    private readonly ILogger<PlayerService> logger;
 
     public PlayerService(
         IOdinEyeApiClient odinEyeApiClient,
         ISteamApiClient steamApiClient,
         IFileService fileService,
-        IMemoryCache memoryCache)
+        IMemoryCache memoryCache,
+        ILogger<PlayerService> logger)
     {
         this.odinEyeApiClient = odinEyeApiClient;
         this.steamApiClient = steamApiClient;
         this.fileService = fileService;
         steamProfileCache = memoryCache;
+        this.logger = logger;
     }
     
     public async Task<IEnumerable<Player>> GetPlayers()
@@ -48,11 +51,9 @@ public class PlayerService : IPlayerService
 
     private async Task<SteamUserProfile> GetSteamUserProfile(string steamUserId)
     {
-        Console.WriteLine("Getting Steam profile.");
-        
         if (!steamProfileCache.TryGetValue(steamUserId, out SteamUserProfile cachedProfile))
         {
-            Console.WriteLine("Steam profile cache miss.");
+            logger.LogInformation("Steam profile cache miss for steamUserId {SteamUserId}", steamUserId);
             
             var profile = await steamApiClient.GetUserProfile(steamUserId);
             var avatarFileName = $"{steamUserId}.jpg";
