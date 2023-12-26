@@ -62,6 +62,7 @@ builder.Services.AddHttpClient<ISteamApiClient, SteamApiClient>((provider, clien
 builder.Services.AddSingleton<IFileService, FileService>();
 builder.Services.AddSingleton<IPlayerService, PlayerService>();
 builder.Services.AddSingleton<IServerDetailsService, ServerDetailsService>();
+builder.Services.AddSingleton<IGameEventLogger, GameEventLogger>();
 builder.Services.AddHostedService<OdinEyeWebSocketService>();
 
 
