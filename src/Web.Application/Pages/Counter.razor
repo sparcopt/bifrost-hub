@@ -1,17 +1,19 @@
 ﻿@page "/counter"
+@using Web.Application.Extensions
 @using Web.Application.Models
+@using Web.Application.Services
 @using Color = MudBlazor.Color
 @using Player = Web.Application.Models.Player
 @using Size = MudBlazor.Size
 @using OdinEye.Models.Api
 @using OdinEye.Models.Proto
 @using Data.Gateway.OdinEye
-@using Web.Application.Extensions
-@using Web.Application.Services
 @inject IOdinEyeApiClient odinApiClient
 @inject IOdinEyeWebSocketClient odinEyeWebSocketClient
 @inject IPlayerService playerService
 @inject IServerDetailsService serverDetailsService
+@inject IGameActivityConsumer gameActivityConsumer
+@implements IDisposable
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -118,46 +120,47 @@
     private List<Player> players = new ();
     private WorldDetails worldDetails = new();
     private Stack<GameEvent> gameEvents = new();
-    
+
     protected override async Task OnInitializedAsync()
     {
-        odinEyeWebSocketClient.GameEventReceived.Subscribe(gameEvent =>
-        {
-            InvokeAsync(async () =>
+        gameActivityConsumer
+            .OnGameEventReceived(async gameEvent =>
             {
-                if (gameEvent.Type == EventType.PlayerSpawn)
+                await InvokeAsync(async () =>
                 {
-                    var existingPlayer = players.FirstOrDefault(p => p.SteamId == gameEvent.Player.SteamId);
-                    if (existingPlayer != null)
+                    if (gameEvent.Type == EventType.PlayerSpawn)
                     {
-                        existingPlayer.Id = gameEvent.Player.Id;
+                        var existingPlayer = players.FirstOrDefault(p => p.SteamId == gameEvent.Player.SteamId);
+                        if (existingPlayer != null)
+                        {
+                            existingPlayer.Id = gameEvent.Player.Id;
+                        }
+                        else
+                        {
+                            var player = gameEvent.Player.ToModel();
+                            await playerService.EnrichPlayerWithSteamProfile(player);
+                            players.Add(player);
+                        }
                     }
-                    else
+
+                    if (gameEvent.Type == EventType.PlayerDisconnect)
                     {
-                        var player = gameEvent.Player.ToModel();
-                        await playerService.EnrichPlayerWithSteamProfile(player);
-                        players.Add(player);
+                        var player = players.First(p => p.Id == gameEvent.Player.Id);
+                        players.Remove(player);
                     }
-                }
-                
-                if (gameEvent.Type == EventType.PlayerDisconnect)
-                {
-                    var player = players.First(p => p.Id == gameEvent.Player.Id);
-                    players.Remove(player);
-                }
-                
-                gameEvents.Push(gameEvent);
-                StateHasChanged();
-            });
-        });
-        odinEyeWebSocketClient.GameStatsSnapshotReceived.Subscribe(snapshot =>
-        {
-            InvokeAsync(() =>
+
+                    gameEvents.Push(gameEvent);
+                    StateHasChanged();
+                });
+            })
+            .OnGameStatsSnapshotReceived(snapshot =>
             {
-                UpdatePlayerStats(snapshot);
-                StateHasChanged();
+                InvokeAsync(() =>
+                {
+                    UpdatePlayerStats(snapshot);
+                    StateHasChanged();
+                });
             });
-        });
         
         var serverDetailsTask = serverDetailsService.GetServerDetails();
         var worldDetailsTask = odinApiClient.GetWorldDetails();
@@ -189,5 +192,10 @@
     {
         var dayCycle = worldDetails.DayCycle;
         return dayCycle == "day" ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.Nightlight;
+    }
+
+    public void Dispose()
+    {
+        gameActivityConsumer.Dispose();
     }
 }
