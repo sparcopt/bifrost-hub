@@ -63,7 +63,7 @@ builder.Services.AddSingleton<IFileService, FileService>();
 builder.Services.AddSingleton<IPlayerService, PlayerService>();
 builder.Services.AddSingleton<IServerDetailsService, ServerDetailsService>();
 builder.Services.AddSingleton<IGameEventLogger, GameEventLogger>();
-builder.Services.AddSingleton<IGameActivityConsumerFactory, GameActivityConsumerFactory>();
+builder.Services.AddTransient<IGameActivityConsumer, GameActivityConsumer>();
 builder.Services.AddHostedService<OdinEyeWebSocketService>();
 
 

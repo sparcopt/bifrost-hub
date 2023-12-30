@@ -2,7 +2,7 @@
 
 using OdinEye.Models.Proto;
 
-public interface IGameActivityConsumer
+public interface IGameActivityConsumer : IDisposable
 {
     IGameActivityConsumer OnGameEventReceived(Action<GameEvent> handler);
     IGameActivityConsumer OnGameEventReceived(Func<GameEvent, Task> handler);

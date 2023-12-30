@@ -12,7 +12,8 @@
 @inject IOdinEyeWebSocketClient odinEyeWebSocketClient
 @inject IPlayerService playerService
 @inject IServerDetailsService serverDetailsService
-@inject IGameActivityConsumerFactory gameActivityConsumerFactory
+@inject IGameActivityConsumer gameActivityConsumer
+@implements IDisposable
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -122,7 +123,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        gameActivityConsumerFactory.Create("dash")
+        gameActivityConsumer
             .OnGameEventReceived(async gameEvent =>
             {
                 await InvokeAsync(async () =>
@@ -191,5 +192,10 @@
     {
         var dayCycle = worldDetails.DayCycle;
         return dayCycle == "day" ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.Nightlight;
+    }
+
+    public void Dispose()
+    {
+        gameActivityConsumer.Dispose();
     }
 }
