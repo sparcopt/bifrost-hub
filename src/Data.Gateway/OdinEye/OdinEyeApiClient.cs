@@ -20,4 +20,7 @@ public class OdinEyeApiClient : IOdinEyeApiClient
 
     public async Task<IEnumerable<Player>> GetPlayers() =>
         await httpClient.GetFromJsonAsync<IEnumerable<Player>>("players");
+    
+    public async Task<BossDetails> GetBossDetails() =>
+        await httpClient.GetFromJsonAsync<BossDetails>("bossDetails");
 }

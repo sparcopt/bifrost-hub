@@ -9,4 +9,6 @@ public interface IOdinEyeApiClient
     public Task<ServerDetails> GetServerDetails();
     
     public Task<IEnumerable<Player>> GetPlayers();
+
+    public Task<BossDetails> GetBossDetails();
 }
