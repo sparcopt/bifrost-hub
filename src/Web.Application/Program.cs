@@ -1,6 +1,5 @@
 using Data.Gateway.Configuration;
 using Data.Gateway.OdinEye;
-using Data.Gateway.Steam;
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using Serilog;

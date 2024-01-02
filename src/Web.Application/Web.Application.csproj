@@ -23,8 +23,4 @@
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Data.Gateway\Data.Gateway.csproj" />
-    </ItemGroup>
-
 </Project>

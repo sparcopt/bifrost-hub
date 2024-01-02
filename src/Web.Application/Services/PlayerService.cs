@@ -1,7 +1,6 @@
 ﻿namespace Web.Application.Services;
 
 using Data.Gateway.OdinEye;
-using Data.Gateway.Steam;
 using Extensions;
 using LazyCache;
 using Microsoft.Extensions.Caching.Memory;
