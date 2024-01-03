@@ -1,4 +1,4 @@
-﻿namespace Web.Application.Services;
+﻿namespace BifrostHub.Application.Features.Files;
 
 public interface IFileService
 {

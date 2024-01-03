@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-public class UserProfile
+public class PlayerSummary
 {
     [JsonPropertyName("steamid")]
     public string SteamId { get; set; }

@@ -5,6 +5,10 @@ public class Player
     public string Id { get; }
 
     public string SteamId { get; }
+    
+    public string SteamUsername { get; private set; }
+    
+    public string SteamAvatarPath { get; private set; }
 
     public string Name { get; }
 
@@ -13,6 +17,7 @@ public class Player
     public float MaxHealth { get; }
 
     public float Stamina { get; }
+    
 
     public Player(string id, string steamId, string name, float health, float maxHealth, float stamina)
     {
@@ -22,5 +27,11 @@ public class Player
         Health = health;
         MaxHealth = maxHealth;
         Stamina = stamina;
+    }
+
+    public void SetSteamInfo(string username, string avatarPath)
+    {
+        SteamUsername = username;
+        SteamAvatarPath = avatarPath;
     }
 }

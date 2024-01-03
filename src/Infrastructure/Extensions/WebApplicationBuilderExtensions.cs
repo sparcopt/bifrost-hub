@@ -1,5 +1,6 @@
 ﻿namespace BifrostHub.Infrastructure.Extensions;
 
+using Application.Common.Interfaces.Gateways;
 using Microsoft.AspNetCore.Builder;
 using Wolverine;
 
@@ -9,7 +10,7 @@ public static class WebApplicationBuilderExtensions
     {
         buidler.UseWolverine(options =>
         {
-            options.Discovery.IncludeAssembly(typeof(##).Assembly);
+            options.Discovery.IncludeAssembly(typeof(IOdinEyeApiClient).Assembly);
             options.Durability.Mode = DurabilityMode.MediatorOnly;
         });
 

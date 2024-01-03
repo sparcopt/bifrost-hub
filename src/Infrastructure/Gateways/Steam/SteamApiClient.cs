@@ -1,5 +1,8 @@
 ﻿namespace BifrostHub.Infrastructure.Gateways.Steam;
 
+using Application.Common.Interfaces.Gateways;
+using Application.Features.Players.Dto;
+using Extensions;
 using Models;
 using System.Net.Http.Json;
 
@@ -12,6 +15,9 @@ public class SteamApiClient : ISteamApiClient
         this.httpClient = httpClient;
     }
     
-    public async Task<UserProfile> GetUserProfile(string steamId) =>
-        (await httpClient.GetFromJsonAsync<ResponseResult>($"ISteamUser/GetPlayerSummaries/v0002/?steamids={steamId}")).Response.Players.FirstOrDefault();
+    public async Task<SteamUserProfile> GetUserProfile(string steamId)
+    {
+        var response = await httpClient.GetFromJsonAsync<Response<PlayerSummaryResponse>>($"ISteamUser/GetPlayerSummaries/v0002/?steamids={steamId}");
+        return response.Data.Players.FirstOrDefault().ToDto();
+    }
 }

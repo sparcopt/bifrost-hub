@@ -1,11 +1,13 @@
 ﻿namespace BifrostHub.Infrastructure.Gateways.Steam.Models;
 
-public class ResponseResult
+using System.Text.Json.Serialization;
+
+public class Response<T>
 {
-    public UserProfileResponse Response { get; set; }
+    public T Data { get; set; }
 }
 
-public class UserProfileResponse
+public class PlayerSummaryResponse
 {
-    public IEnumerable<UserProfile> Players { get; set; }
+    public IEnumerable<PlayerSummary> Players { get; set; }
 }
