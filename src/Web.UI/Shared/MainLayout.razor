@@ -1,7 +1,9 @@
 ﻿@using MudBlazor
+@using Align = MudBlazor.Align
+@inject IConfiguration configuration
 @inherits LayoutComponentBase
 
-<PageTitle>Web.Application</PageTitle>
+<PageTitle>Bifrost Hub</PageTitle>
 
 <MudThemeProvider IsDarkMode="true" Theme="MyCustomTheme" />
 
@@ -20,6 +22,9 @@
             <MudNavLink Href="/worldDetails" Match="NavLinkMatch.Prefix">World details</MudNavLink>
             <MudNavLink Href="/bosses" Match="NavLinkMatch.Prefix">Bosses</MudNavLink>
         </MudNavMenu>
+        <MudText Typo="Typo.subtitle2" Class="d-flex flex-grow-1 justify-center align-end grey-text text-darken-1 mb-3">
+            Version: @configuration["APP_VERSION"]
+        </MudText>
     </MudDrawer>
     <MudMainContent>
         <MudContainer Class="mt-6 mb-6" MaxWidth="MaxWidth.Medium">
