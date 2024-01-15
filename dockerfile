@@ -8,8 +8,8 @@ COPY . .
 RUN dotnet restore BifrostHub.sln --no-cache
 RUN dotnet build --no-restore --configuration Release BifrostHub.sln -p:Version=$RELEASE_VERSION
 
-WORKDIR /app/src/Web.Application
-RUN dotnet publish "Web.Application.csproj" -c Release --no-build --no-restore -o /app/publish -p:Version=$RELEASE_VERSION
+WORKDIR /app/src/Web.UI
+RUN dotnet publish "Web.UI.csproj" -c Release --no-build --no-restore -o /app/publish -p:Version=$RELEASE_VERSION
 
 FROM ${DOTNET_RUNTIME_IMAGE}
 ARG RELEASE_VERSION
@@ -19,4 +19,4 @@ ENV ASPNETCORE_URLS=http://+:5134 \
     ASPNETCORE_ENVIRONMENT=Docker \
     APP_VERSION=$RELEASE_VERSION
 EXPOSE 5134
-ENTRYPOINT ["dotnet", "Web.Application.dll"]
+ENTRYPOINT ["dotnet", "BifrostHub.Web.UI.dll"]

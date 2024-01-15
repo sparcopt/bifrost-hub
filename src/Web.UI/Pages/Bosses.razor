@@ -1,0 +1,90 @@
+﻿@page "/Bosses"
+@using Size = MudBlazor.Size
+@using Color = MudBlazor.Color
+@using Align = MudBlazor.Align
+@using BifrostHub.Application.Features.BossDetails.GetBossDetails
+@using Wolverine
+@using BifrostHub.Application.Features.BossDetails.Dto
+@inject IMessageBus mediator
+
+<MudGrid Justify="Justify.SpaceEvenly" Class="mb-2">
+    <MudItem sm="6" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@skull" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold;">Bosses defeated</MudText>
+                <MudText Typo="Typo.h5">@defeatedBossesCount / @bosses.Count()</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+    <MudItem sm="6" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@skullTarget" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold">Active bosses</MudText>
+                <MudText Typo="Typo.h5">@activeBosses</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4 flex-grow-1 rounded-lg">
+<MudText Typo="Typo.h5" Class="mb-3">Bosses</MudText>
+    <MudGrid Justify="Justify.FlexStart" Class="mb-2">
+        @if (isLoading)
+        {
+            for (var i = 0; i < 6; i++)
+            {
+                <MudItem sm="6" xs="12" Style="height: 370px" Class="d-flex">
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Class="rounded-lg" Height="100%" Width="100%"/>
+                </MudItem>
+            }
+        }
+        else
+        {
+            foreach (var boss in bosses)
+            {
+                <MudItem sm="6" xs="12" Style="height: 370px" Class="d-flex">
+                    <MudPaper Elevation="0" Class="dmud-paper pa-4 gap-2 rounded-lg d-flex align-center flex-column justify-center" Style="background-color: var(--mud-palette-dark)">
+                        <MudImage Src="@boss.Image" Height="200"/>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.h6">@boss.Name</MudText>
+                            @if (boss.IsDefeated)
+                            {
+                                <MudChip Size="Size.Small" Icon="@Icons.Material.Filled.Check" Variant="Variant.Text" Color="Color.Success">Defeated</MudChip>
+                            }
+                        </MudStack>
+                        <MudDivider Light="true" DividerType="DividerType.FullWidth" Class="flex-grow-0"/>
+                        <MudText Align="Align.Center" Typo="Typo.caption">@boss.Description</MudText>
+                    </MudPaper>
+                </MudItem>
+            }
+        }
+    </MudGrid>
+</MudPaper>
+
+@code {
+    
+    private bool isLoading = true;
+    private IEnumerable<Boss> bosses = Enumerable.Empty<Boss>();
+    private int defeatedBossesCount => bosses.Count(b => b.IsDefeated);
+    private int activeBosses;
+
+    string skull = "<path fill=\"currentColor\" d=\"M8 15a2 2 0 0 1-2-2a2 2 0 0 1 2-2a2 2 0 0 1 2 2a2 2 0 0 1-2 2m2.5 2l1.5-3l1.5 3zm5.5-2a2 2 0 0 1-2-2a2 2 0 0 1 2-2a2 2 0 0 1 2 2a2 2 0 0 1-2 2m6-4A10 10 0 0 0 12 1A10 10 0 0 0 2 11c0 2.8 1.2 5.3 3 7.1V22h14v-3.9c1.8-1.8 3-4.3 3-7.1m-5 9h-2v-2h-2v2h-2v-2H9v2H7v-2.8c-1.8-1.5-3-3.7-3-6.2a8 8 0 0 1 8-8a8 8 0 0 1 8 8c0 2.5-1.2 4.8-3 6.2z\"/>";
+    string skullTarget = "<path fill=\"currentColor\" d=\"M2 0C.9 0 0 .9 0 2v4h2V2h4V0zm16 0v2h4v4h2V2c0-1.1-.9-2-2-2zM9.5 13c-.8 0-1.5-.7-1.5-1.5S8.7 10 9.5 10s1.5.7 1.5 1.5s-.7 1.5-1.5 1.5m1.5 2l1-2l1 2zm3.5-2c-.8 0-1.5-.7-1.5-1.5s.7-1.5 1.5-1.5s1.5.7 1.5 1.5s-.7 1.5-1.5 1.5M0 18v4c0 1.1.9 2 2 2h4v-2H2v-4zm22 0v4h-4v2h4c1.1 0 2-.9 2-2v-4zM12 3c-4.4 0-8 3.6-8 8c0 2 .8 3.9 2 5.3V21h12v-4.7c1.2-1.4 2-3.2 2-5.3c0-4.4-3.6-8-8-8m4 12.4V19h-2v-2h-1v2h-2v-2h-1v2H8v-3.6c-1.2-1.1-2-2.7-2-4.4c0-3.3 2.7-6 6-6s6 2.7 6 6c0 1.8-.8 3.3-2 4.4\"/>";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GetBossDetailsQuery();
+        var bossDetails = await mediator.InvokeAsync<BossDetails>(query);
+
+        bosses = bossDetails.Bosses;
+        activeBosses = bossDetails.ActiveBosses;
+        
+        isLoading = false;
+    }
+}
