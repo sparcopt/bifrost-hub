@@ -8,6 +8,7 @@ public static class PlayerMappingExtensions
     public static Dto.Player ToDto(this Player player) =>
         new(
             player.Id,
+            player.CharacterId,
             player.SteamId,
             player.Name,
             player.Health,

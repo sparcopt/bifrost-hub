@@ -131,12 +131,7 @@
                 {
                     if (gameEvent.Type == EventType.PlayerSpawn)
                     {
-                        var existingPlayer = players.FirstOrDefault(p => p.SteamId == gameEvent.Player.SteamId);
-                        if (existingPlayer != null)
-                        {
-                            existingPlayer.UpdateIdentifier(gameEvent.Player.Id);
-                        }
-                        else
+                        if (players.All(p => p.Id != gameEvent.Player.Id))
                         {
                             var player = gameEvent.Player.ToDto();
                             var command = new EnrichPlayerCommand(player);

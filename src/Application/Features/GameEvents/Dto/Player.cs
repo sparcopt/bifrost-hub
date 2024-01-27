@@ -2,7 +2,9 @@
 
 public class Player
 {
-    public string Id { get; }
+    public Guid Id { get; }
+    
+    public string CharacterId { get; }
 
     public string SteamId { get;}
 
@@ -14,9 +16,10 @@ public class Player
 
     public float Stamina { get;}
 
-    public Player(string id, string steamId, string name, float health, float maxHealth, float stamina)
+    public Player(Guid id, string characterId, string steamId, string name, float health, float maxHealth, float stamina)
     {
         Id = id;
+        CharacterId = characterId;
         SteamId = steamId;
         Name = name;
         Health = health;
