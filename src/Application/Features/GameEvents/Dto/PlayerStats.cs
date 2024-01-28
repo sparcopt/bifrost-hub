@@ -2,7 +2,9 @@
 
 public class PlayerStats
 {
-    public string Id { get; }
+    public Guid Id { get; }
+    
+    public string CharacterId { get; }
     
     public float Health { get; }
     
@@ -10,9 +12,10 @@ public class PlayerStats
     
     public float Stamina { get; }
 
-    public PlayerStats(string id, float health, float maxHealth, float stamina)
+    public PlayerStats(Guid id, string characterId, float health, float maxHealth, float stamina)
     {
         Id = id;
+        CharacterId = characterId;
         Health = health;
         MaxHealth = maxHealth;
         Stamina = stamina;

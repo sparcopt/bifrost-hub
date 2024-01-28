@@ -2,7 +2,9 @@
 
 public class Player
 {
-    public string Id { get; private set; }
+    public Guid Id { get; private set; }
+    
+    public string CharacterId { get; private set; }
 
     public string SteamId { get; }
     
@@ -19,9 +21,10 @@ public class Player
     public float Stamina { get; private set; }
     
 
-    public Player(string id, string steamId, string name, float health, float maxHealth, float stamina)
+    public Player(Guid id, string characterId, string steamId, string name, float health, float maxHealth, float stamina)
     {
         Id = id;
+        CharacterId = characterId;
         SteamId = steamId;
         Name = name;
         Health = health;
@@ -41,6 +44,4 @@ public class Player
         MaxHealth = maxHealth;
         Stamina = stamina;
     }
-
-    public void UpdateIdentifier(string id) => Id = id;
 }

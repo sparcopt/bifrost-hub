@@ -9,7 +9,7 @@ public static class GameStatsSnapshotMappingExtensions
         new(snapshot.PlayerStats.Select(p => p.ToDto()), snapshot.WorldStats.ToDto());
 
     public static Dto.PlayerStats ToDto(this PlayerStats playerStats) =>
-        new (playerStats.Id, playerStats.Health, playerStats.MaxHealth, playerStats.Stamina);
+        new (playerStats.Id, playerStats.CharacterId, playerStats.Health, playerStats.MaxHealth, playerStats.Stamina);
 
     public static Dto.WorldStats ToDto(this WorldStats worldStats) =>
         new(worldStats.DayNumber, worldStats.DayCycle);
