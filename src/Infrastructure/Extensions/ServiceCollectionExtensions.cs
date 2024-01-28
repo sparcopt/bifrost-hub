@@ -43,7 +43,8 @@ public static class ServiceCollectionExtensions
             .AddRepositories()
             .AddGateways()
             .AddSingleton<IGameEventLogger, GameEventLogger>()
-            .AddHostedService<OdinEyeWebSocketService>();
+            .AddHostedService<OdinEyeWebSocketService>()
+            .AddHostedService<GameEventConsumerService>();
         
         return services;
     }
