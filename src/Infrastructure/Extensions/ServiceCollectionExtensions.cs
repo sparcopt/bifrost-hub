@@ -1,6 +1,7 @@
 ﻿namespace BifrostHub.Infrastructure.Extensions;
 
 using Application.Common.Interfaces.Gateways;
+using Application.Common.Interfaces.Repositories;
 using Configuration;
 using Gateways.OdinEye.Api;
 using Gateways.OdinEye.WebSockets;
@@ -9,6 +10,8 @@ using Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using Repositories.Players;
 using Services;
 using Websocket.Client;
 
@@ -27,10 +30,17 @@ public static class ServiceCollectionExtensions
             .BindConfiguration(SteamOptions.ConfigSectionPath)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+        
+        services
+            .AddOptions<MongoOptions>()
+            .BindConfiguration(MongoOptions.ConfigSectionPath)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services
             .AddLogging()
             .AddLazyCache()
+            .AddRepositories()
             .AddGateways()
             .AddSingleton<IGameEventLogger, GameEventLogger>()
             .AddHostedService<OdinEyeWebSocketService>();
@@ -68,6 +78,21 @@ public static class ServiceCollectionExtensions
                 client.BaseAddress = new Uri(options.ApiUrl); 
             })
             .AddHttpMessageHandler<SteamAuthenticationHandler>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services
+            .AddSingleton<IMongoDatabase>(provider =>
+            {
+                var options = provider.GetRequiredService<IOptions<MongoOptions>>().Value;
+                var url = new MongoUrl(options.ConnectionString);
+                var client = new MongoClient(url);
+                return client.GetDatabase(url.DatabaseName);
+            })
+            .AddSingleton<IPlayerRepository, PlayerRepository>();
 
         return services;
     }

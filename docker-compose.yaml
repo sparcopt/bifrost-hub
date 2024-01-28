@@ -12,6 +12,11 @@ services:
     volumes:
       - ./src/Web.Application/appsettings.Docker.json:/app/appsettings.Docker.json
         
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+        
   seq:
     image: datalust/seq:latest
     environment:
