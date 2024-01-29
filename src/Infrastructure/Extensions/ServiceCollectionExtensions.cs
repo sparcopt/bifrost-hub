@@ -6,6 +6,10 @@ using Configuration;
 using Gateways.OdinEye.Api;
 using Gateways.OdinEye.WebSockets;
 using Gateways.Steam;
+using Hangfire;
+using Hangfire.Mongo;
+using Hangfire.Mongo.Migration.Strategies;
+using Hangfire.Mongo.Migration.Strategies.Backup;
 using Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,7 +48,8 @@ public static class ServiceCollectionExtensions
             .AddGateways()
             .AddSingleton<IGameEventLogger, GameEventLogger>()
             .AddHostedService<OdinEyeWebSocketService>()
-            .AddHostedService<GameEventConsumerService>();
+            .AddHostedService<GameEventConsumerService>()
+            .AddHangfire();
         
         return services;
     }
@@ -83,8 +88,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddRepositories(this IServiceCollection services)
-    {
+    private static IServiceCollection AddRepositories(this IServiceCollection services) =>
         services
             .AddSingleton<IMongoDatabase>(provider =>
             {
@@ -95,6 +99,28 @@ public static class ServiceCollectionExtensions
             })
             .AddSingleton<IPlayerRepository, PlayerRepository>();
 
-        return services;
-    }
+    private static IServiceCollection AddHangfire(this IServiceCollection services) =>
+        services
+            .AddHangfire((provider, configuration) =>
+            {
+                var options = provider.GetRequiredService<IOptions<MongoOptions>>().Value;
+
+                var storageOptions = new MongoStorageOptions
+                {
+                    MigrationOptions = new MongoMigrationOptions
+                    {
+                        MigrationStrategy = new MigrateMongoMigrationStrategy(),
+                        BackupStrategy = new CollectionMongoBackupStrategy()
+                    },
+                    Prefix = "hangfire",
+                    CheckConnection = true
+                };
+                
+                configuration
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseMongoStorage(options.ConnectionString, storageOptions);
+            })
+            .AddHangfireServer();
 }

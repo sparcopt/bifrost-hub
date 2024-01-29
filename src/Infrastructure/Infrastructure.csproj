@@ -9,6 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.9" />
+        <PackageReference Include="Hangfire.Mongo" Version="1.9.16" />
         <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
         <PackageReference Include="OdinEye.Models" Version="1.0.1-beta.d4c7393" />
         <PackageReference Include="Websocket.Client" Version="5.0.0" />
