@@ -1,17 +1,17 @@
-﻿namespace BifrostHub.Application.Features.Players.GetPlayers;
+﻿namespace BifrostHub.Application.Features.Players.GetOnlinePlayers;
 
 using Common.Interfaces.Gateways;
 using Dto;
 using Steam;
 
-public class GetPlayersQuery
+public class GetOnlinePlayersQuery
 { }
 
-public static class GetPlayersQueryHandler
+public static class GetOnlinePlayersQueryHandler
 {
-    public static async Task<IEnumerable<Player>> Handle(GetPlayersQuery query, IOdinEyeApiClient client, ISteamUserProfileService profileService)
+    public static async Task<IEnumerable<OnlinePlayer>> Handle(GetOnlinePlayersQuery query, IOdinEyeApiClient client, ISteamUserProfileService profileService)
     {
-        var players = new List<Player>();
+        var players = new List<OnlinePlayer>();
         
         foreach (var player in await client.GetPlayers())
         {

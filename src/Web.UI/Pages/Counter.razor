@@ -1,17 +1,16 @@
 ﻿@page "/counter"
 @using Color = MudBlazor.Color
 @using Size = MudBlazor.Size
-@using BifrostHub.Application.Features.GameEvents
 @using BifrostHub.Application.Features.GameEvents.Dto
 @using BifrostHub.Application.Features.Players.Dto
-@using BifrostHub.Application.Features.Players.EnrichPlayer
-@using BifrostHub.Application.Features.Players.GetPlayers
+@using BifrostHub.Application.Features.Players.EnrichOnlinePlayer
+@using BifrostHub.Application.Features.Players.GetOnlinePlayers
 @using BifrostHub.Application.Features.ServerDetails.Dto
 @using BifrostHub.Application.Features.ServerDetails.GetServerDetails
 @using BifrostHub.Application.Features.WorldDetails.Dto
 @using BifrostHub.Application.Features.WorldDetails.GetWorldDetails
 @using Wolverine
-@using Player = BifrostHub.Application.Features.Players.Dto.Player
+@using BifrostHub.Application.Features.GameEvents
 @inject IGameActivityConsumer gameActivityConsumer
 @inject IMessageBus mediator
 @implements IDisposable
@@ -118,7 +117,7 @@
 @code {
 
     private ServerDetails serverDetails;
-    private List<Player> players = new();
+    private List<OnlinePlayer> players = new();
     private WorldDetails worldDetails;
     private Stack<GameEvent> gameEvents = new();
 
@@ -134,7 +133,7 @@
                         if (players.All(p => p.Id != gameEvent.Player.Id))
                         {
                             var player = gameEvent.Player.ToDto();
-                            var command = new EnrichPlayerCommand(player);
+                            var command = new EnrichOnlinePlayerCommand(player);
                             await mediator.InvokeAsync<Player>(command);
                             players.Add(player);
                         }
@@ -161,7 +160,7 @@
 
         var serverDetailsTask = mediator.InvokeAsync<ServerDetails>(new GetServerDetailsQuery());
         var worldDetailsTask = mediator.InvokeAsync<WorldDetails>(new GetWorldDetailsQuery());
-        var playersTask = mediator.InvokeAsync<IEnumerable<Player>>(new GetPlayersQuery());
+        var playersTask = mediator.InvokeAsync<IEnumerable<OnlinePlayer>>(new GetOnlinePlayersQuery());
         await Task.WhenAll(serverDetailsTask, worldDetailsTask, playersTask);
         serverDetails = serverDetailsTask.Result;
         worldDetails = worldDetailsTask.Result;

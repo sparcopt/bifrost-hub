@@ -44,12 +44,13 @@ public static class ServiceCollectionExtensions
         services
             .AddLogging()
             .AddLazyCache()
+            .AddHangfire()
             .AddRepositories()
             .AddGateways()
             .AddSingleton<IGameEventLogger, GameEventLogger>()
             .AddHostedService<OdinEyeWebSocketService>()
             .AddHostedService<GameEventConsumerService>()
-            .AddHangfire();
+            .AddHostedService<BackgroundJobService>();
         
         return services;
     }

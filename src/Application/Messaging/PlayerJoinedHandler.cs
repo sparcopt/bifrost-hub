@@ -2,6 +2,7 @@
 
 using Common.Interfaces.Repositories;
 using Features.GameEvents.Dto;
+using Domain = Features.Players.Domain;
 
 public static class PlayerJoinedHandler
 {
@@ -11,7 +12,12 @@ public static class PlayerJoinedHandler
         {
             return;
         }
-        
-        await Task.CompletedTask;
+
+        var player = await playerRepository.GetById(message.Player.Id);
+        if (player is null)
+        {
+            player = new Domain.Player(message.Player.Id, message.Player.Name, message.Player.SteamId);
+            await playerRepository.Save(player);
+        }
     }
 }
