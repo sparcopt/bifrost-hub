@@ -3,19 +3,16 @@
 using Common.Interfaces.Gateways;
 using Common.Interfaces.Repositories;
 using Features.Players.Domain;
-using Microsoft.Extensions.Logging;
 
 public class SyncServerPlayersJob
 {
     private readonly IOdinEyeApiClient odinEyeApiClient;
     private readonly IPlayerRepository playerRepository;
-    private readonly ILogger<SyncServerPlayersJob> logger;
 
-    public SyncServerPlayersJob(IOdinEyeApiClient odinEyeApiClient, IPlayerRepository playerRepository, ILogger<SyncServerPlayersJob> logger)
+    public SyncServerPlayersJob(IOdinEyeApiClient odinEyeApiClient, IPlayerRepository playerRepository)
     {
         this.odinEyeApiClient = odinEyeApiClient;
         this.playerRepository = playerRepository;
-        this.logger = logger;
     }
 
     public async Task Execute()
@@ -28,7 +25,6 @@ public class SyncServerPlayersJob
             if (player is null)
             {
                 player = new Player(onlinePlayer.Id, onlinePlayer.Name, onlinePlayer.SteamId);
-                logger.LogDebug("Saving player {Name} with {Id}", player.Name, player.Id);
                 await playerRepository.Save(player);
             }
         }
