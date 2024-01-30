@@ -2,8 +2,8 @@
 
 public static class PlayerExtensions
 {
-    public static Players.Dto.Player ToDto(this Player player) =>
-        new Players.Dto.Player(
+    public static Players.Dto.OnlinePlayer ToDto(this Player player) =>
+        new Players.Dto.OnlinePlayer(
             player.Id,
             player.CharacterId,
             player.SteamId,

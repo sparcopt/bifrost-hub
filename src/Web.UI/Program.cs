@@ -1,5 +1,6 @@
 using BifrostHub.Application.Extensions;
 using BifrostHub.Infrastructure.Extensions;
+using Hangfire;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseHangfireDashboard();
 
 app.UseRouting();
 

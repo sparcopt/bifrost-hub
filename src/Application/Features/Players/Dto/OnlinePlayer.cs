@@ -1,6 +1,6 @@
 ﻿namespace BifrostHub.Application.Features.Players.Dto;
 
-public class Player
+public class OnlinePlayer
 {
     public Guid Id { get; private set; }
     
@@ -21,7 +21,7 @@ public class Player
     public float Stamina { get; private set; }
     
 
-    public Player(Guid id, string characterId, string steamId, string name, float health, float maxHealth, float stamina)
+    public OnlinePlayer(Guid id, string characterId, string steamId, string name, float health, float maxHealth, float stamina)
     {
         Id = id;
         CharacterId = characterId;

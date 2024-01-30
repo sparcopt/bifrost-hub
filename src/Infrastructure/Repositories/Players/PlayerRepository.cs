@@ -3,6 +3,7 @@
 using Application.Common.Interfaces.Repositories;
 using MongoDB.Driver;
 using Pocos;
+using Domain = Application.Features.Players.Domain;
 
 public class PlayerRepository : Repository<Player>, IPlayerRepository
 {
@@ -12,13 +13,7 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
     public PlayerRepository(IMongoDatabase database) : base(database, CollectionName)
     { }
 
-    public async Task Save()
-    {
-        var player = new Player { Id = Guid.NewGuid() };
-        await Upsert(player);
-    } 
+    public async Task Save(Domain.Player player) => await Upsert(player.ToPoco());
 
-    public async Task<Player> GetById(Guid id) => await FirstOrDefault(p => p.Id == id);
-
-    public async Task<IEnumerable<Player>> Search() => await Find();
+    public async Task<Domain.Player> GetById(Guid id) => (await FirstOrDefault(p => p.Id == id))?.ToDomain();
 }

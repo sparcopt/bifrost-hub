@@ -5,7 +5,7 @@ using Dto = Application.Features.Players.Dto;
 
 public static class PlayerMappingExtensions
 {
-    public static Dto.Player ToDto(this Player player) =>
+    public static Dto.OnlinePlayer ToDto(this Player player) =>
         new(
             player.Id,
             player.CharacterId,
