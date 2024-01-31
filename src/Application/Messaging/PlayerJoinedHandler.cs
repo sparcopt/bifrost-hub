@@ -14,6 +14,12 @@ public static class PlayerJoinedHandler
         }
 
         var player = await playerRepository.GetById(message.Player.Id);
+        if (player is { IsOnline: false })
+        {
+            player.SetAsOnline();
+            await playerRepository.Save(player);
+        }
+        
         if (player is null)
         {
             player = new Domain.Player(message.Player.Id, message.Player.Name, message.Player.SteamId);

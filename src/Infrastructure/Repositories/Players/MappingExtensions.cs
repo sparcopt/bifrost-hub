@@ -11,7 +11,7 @@ public static class MappingExtensions
             Id = player.Id,
             Name = player.Name,
             SteamId = player.SteamId,
-            OnlineStatus = (OnlineStatus)player.OnlineStatus,
+            IsOnline = player.IsOnline,
             LastOnlineDate = player.LastOnlineDate,
             CreatedDate = player.CreatedDate,
             UpdatedDate = player.UpdatedDate
@@ -22,7 +22,7 @@ public static class MappingExtensions
             player.Id,
             player.Name,
             player.SteamId,
-            (Domain.OnlineStatus)player.OnlineStatus,
+            player.IsOnline,
             player.LastOnlineDate,
             player.CreatedDate,
             player.UpdatedDate);

@@ -5,17 +5,17 @@ public class Player
     public Guid Id { get; }
     public string Name { get; }
     public string SteamId { get; }
-    public OnlineStatus OnlineStatus { get; }
-    public DateTime LastOnlineDate { get; }
+    public bool IsOnline { get; private set; }
+    public DateTime LastOnlineDate { get; private set; }
     public DateTime CreatedDate { get; }
-    public DateTime UpdatedDate { get; }
+    public DateTime UpdatedDate { get; private set; }
 
     public Player(Guid id, string name, string steamId)
     {
         Id = id;
         Name = name;
         SteamId = steamId;
-        OnlineStatus = OnlineStatus.Online;
+        IsOnline = true;
         LastOnlineDate = DateTime.UtcNow;
         CreatedDate = DateTime.UtcNow;
         UpdatedDate = DateTime.UtcNow;;
@@ -25,7 +25,7 @@ public class Player
         Guid id,
         string name,
         string steamId,
-        OnlineStatus onlineStatus,
+        bool isOnline,
         DateTime lastOnlineDate,
         DateTime createdDate,
         DateTime updatedDate)
@@ -33,7 +33,7 @@ public class Player
         Id = id;
         Name = name;
         SteamId = steamId;
-        OnlineStatus = onlineStatus;
+        IsOnline = isOnline;
         LastOnlineDate = lastOnlineDate;
         CreatedDate = createdDate;
         UpdatedDate = updatedDate;
@@ -43,9 +43,23 @@ public class Player
         Guid id,
         string name,
         string steamId,
-        OnlineStatus onlineStatus,
+        bool isOnline,
         DateTime lastOnlineDate,
         DateTime createdDate,
         DateTime updatedDate) =>
-        new Player(id, name, steamId, onlineStatus, lastOnlineDate, createdDate, updatedDate);
+        new Player(id, name, steamId, isOnline, lastOnlineDate, createdDate, updatedDate);
+
+    public void SetAsOnline()
+    {
+        IsOnline = true;
+        LastOnlineDate = DateTime.UtcNow;
+        UpdatedDate = DateTime.UtcNow;
+    }
+    
+    public void SetAsOffline()
+    {
+        IsOnline = false;
+        LastOnlineDate = DateTime.UtcNow;
+        UpdatedDate = DateTime.UtcNow;
+    }
 }
