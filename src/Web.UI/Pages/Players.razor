@@ -3,6 +3,8 @@
 @using BifrostHub.Application.Features.Players.Dto
 @using BifrostHub.Application.Features.Players.GetAllPlayers
 @using BifrostHub.Application.Common
+@using BifrostHub.Web.UI.Extensions
+@using SortDirection = MudBlazor.SortDirection
 @inject IMessageBus mediator
     
 <MudTable ServerData="@(new Func<TableState, Task<TableData<Player>>>(ServerReload))" Dense="false" Hover="true" @ref="table">
@@ -13,12 +15,12 @@
         @*               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField> *@
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="nr_field" T="Player">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="sign_field" T="Player">Status</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="@NameSortLabel" T="Player">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="@StatusSortLabel" T="Player">Status</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Nr">@context.Name</MudTd>
-        <MudTd DataLabel="Sign">@context.IsOnline</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Status">@context.IsOnline</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -32,13 +34,38 @@
 </MudTable>
 
 @code {
+
+    private const string NameSortLabel = nameof(NameSortLabel);
+    private const string StatusSortLabel = nameof(StatusSortLabel);
     
     private MudTable<Player> table;
     
     private async Task<TableData<Player>> ServerReload(TableState state)
     {
-        var pagedPlayers = await mediator.InvokeAsync<Page<Player>>(new GetAllPlayersQuery { IsOnline = false});
+        var query = new GetAllPlayersQuery
+        {
+            Sort = CreateSort(state.SortLabel, state.SortDirection),
+            Page = state.Page + 1,
+            PageSize = state.PageSize
+        };
         
+        var pagedPlayers = await mediator.InvokeAsync<Page<Player>>(query);
         return new TableData<Player> { TotalItems = pagedPlayers.TotalItems, Items = pagedPlayers.Entries };
+    }
+
+    private Sort<PlayerSortField> CreateSort(string sortLabel, SortDirection direction)
+    {
+        if (string.IsNullOrEmpty(sortLabel) || direction is SortDirection.None)
+        {
+            return null;
+        }
+        
+        var field = sortLabel switch
+        {
+            NameSortLabel => PlayerSortField.Name,
+            StatusSortLabel => PlayerSortField.IsOnline
+        };
+
+        return new Sort<PlayerSortField>(field, direction.ToDomain());
     }
 }

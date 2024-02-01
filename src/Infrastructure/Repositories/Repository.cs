@@ -21,15 +21,20 @@ public abstract class Repository<TPoco> where TPoco : class, IPoco
 
     protected async Task<IEnumerable<TPoco>> Find(
         FilterDefinition<TPoco> filter,
+        SortDefinition<TPoco> sortDefinition = null,
         int? page = null,
-        int? pageSize = null,
-        Expression<Func<TPoco, object>> field = null)
+        int? pageSize = null)
     {
         var query = collection.Find(filter);
         
         if (page != null && pageSize != null)
         {
             query.Skip((page - 1) * pageSize).Limit(pageSize);
+        }
+
+        if (sortDefinition != null)
+        {
+            query.Sort(sortDefinition);
         }
         
         return await query.ToListAsync();
