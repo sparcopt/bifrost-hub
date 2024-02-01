@@ -19,8 +19,21 @@ public abstract class Repository<TPoco> where TPoco : class, IPoco
     
     protected async Task<TPoco> FirstOrDefault(Expression<Func<TPoco, bool>> filter) => await collection.Find(filter).FirstOrDefaultAsync();
 
-    protected async Task<IEnumerable<TPoco>> Find()
+    protected async Task<IEnumerable<TPoco>> Find(
+        FilterDefinition<TPoco> filter,
+        int? page = null,
+        int? pageSize = null,
+        Expression<Func<TPoco, object>> field = null)
     {
-        return await collection.Find(_ => true).ToListAsync();
+        var query = collection.Find(filter);
+        
+        if (page != null && pageSize != null)
+        {
+            query.Skip((page - 1) * pageSize).Limit(pageSize);
+        }
+        
+        return await query.ToListAsync();
     }
+    
+    protected async Task<int> Count(FilterDefinition<TPoco> filter) => (int)await collection.CountDocumentsAsync(filter);
 }

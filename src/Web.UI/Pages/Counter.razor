@@ -134,8 +134,8 @@
                         {
                             var player = gameEvent.Player.ToDto();
                             var command = new EnrichOnlinePlayerCommand(player);
-                            await mediator.InvokeAsync<Player>(command);
-                            players.Add(player);
+                            var playerEnriched = await mediator.InvokeAsync<OnlinePlayer>(command);
+                            players.Add(playerEnriched);
                         }
                     }
 
