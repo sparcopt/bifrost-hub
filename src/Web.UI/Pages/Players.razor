@@ -1,6 +1,44 @@
 ﻿@page "/Players"
-<h3>Players</h3>
+@using Wolverine
+@using BifrostHub.Application.Features.Players.Dto
+@using BifrostHub.Application.Features.Players.GetAllPlayers
+@using BifrostHub.Application.Common
+@inject IMessageBus mediator
+    
+<MudTable ServerData="@(new Func<TableState, Task<TableData<Player>>>(ServerReload))" Dense="false" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Players</MudText>
+        <MudSpacer />
+        @* <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start" *@
+        @*               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField> *@
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="nr_field" T="Player">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="sign_field" T="Player">Status</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nr">@context.Name</MudTd>
+        <MudTd DataLabel="Sign">@context.IsOnline</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
 
 @code {
     
+    private MudTable<Player> table;
+    
+    private async Task<TableData<Player>> ServerReload(TableState state)
+    {
+        var pagedPlayers = await mediator.InvokeAsync<Page<Player>>(new GetAllPlayersQuery { IsOnline = false});
+        
+        return new TableData<Player> { TotalItems = pagedPlayers.TotalItems, Items = pagedPlayers.Entries };
+    }
 }
