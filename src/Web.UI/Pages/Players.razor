@@ -4,23 +4,42 @@
 @using BifrostHub.Application.Features.Players.GetAllPlayers
 @using BifrostHub.Application.Common
 @using BifrostHub.Web.UI.Extensions
+@using Color = MudBlazor.Color
+@using Size = MudBlazor.Size
 @using SortDirection = MudBlazor.SortDirection
 @inject IMessageBus mediator
-    
+
 <MudTable ServerData="@(new Func<TableState, Task<TableData<Player>>>(ServerReload))" Dense="false" Hover="true" @ref="table">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Players</MudText>
-        <MudSpacer />
-        @* <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start" *@
-        @*               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField> *@
+        <MudSpacer/>
+        <MudChipSet SelectedChipChanged="@(async s => await OnStatusChanged(s))" Filter="true">
+            <MudChip Text="Online" Variant="Variant.Text" Color="Color.Success">Online</MudChip>
+            <MudChip Text="Offline" Variant="Variant.Text" Color="Color.Secondary">Offline</MudChip>
+        </MudChipSet>
+        <MudTextField T="string" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="@NameSortLabel" T="Player">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="@StatusSortLabel" T="Player">Status</MudTableSortLabel></MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@NameSortLabel" T="Player">Name</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@StatusSortLabel" T="Player">Status</MudTableSortLabel>
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Status">@context.IsOnline</MudTd>
+        <MudTd DataLabel="Status" Class="d-flex flex-column gap-0">
+            @if (context.IsOnline)
+            {
+                <MudChip Text="Online" Variant="Variant.Outlined" Color="Color.Success" Style="max-width: fit-content;">Online</MudChip>
+            }
+            else
+            {
+                <MudChip Text="Offline" Variant="Variant.Outlined" Color="Color.Secondary" Style="max-width: fit-content;">Offline</MudChip>
+                <MudText Typo="Typo.caption">Last online: @context.LastOnlineDate</MudText>
+            }
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -29,7 +48,7 @@
         <MudText>Loading...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <MudTablePager/>
     </PagerContent>
 </MudTable>
 
@@ -37,18 +56,21 @@
 
     private const string NameSortLabel = nameof(NameSortLabel);
     private const string StatusSortLabel = nameof(StatusSortLabel);
-    
     private MudTable<Player> table;
-    
+    private string searchText;
+    private bool? isOnline;
+
     private async Task<TableData<Player>> ServerReload(TableState state)
     {
         var query = new GetAllPlayersQuery
         {
+            Name = searchText,
+            IsOnline = isOnline,
             Sort = CreateSort(state.SortLabel, state.SortDirection),
             Page = state.Page + 1,
             PageSize = state.PageSize
         };
-        
+
         var pagedPlayers = await mediator.InvokeAsync<Page<Player>>(query);
         return new TableData<Player> { TotalItems = pagedPlayers.TotalItems, Items = pagedPlayers.Entries };
     }
@@ -59,7 +81,7 @@
         {
             return null;
         }
-        
+
         var field = sortLabel switch
         {
             NameSortLabel => PlayerSortField.Name,
@@ -67,5 +89,24 @@
         };
 
         return new Sort<PlayerSortField>(field, direction.ToDomain());
+    }
+
+    private async Task OnSearch(string text)
+    {
+        searchText = text;
+        await table.ReloadServerData();
+    }
+
+    private async Task OnStatusChanged(MudChip statusChip)
+    {
+        bool? value = statusChip?.Text switch
+        {
+            "Online" => true,
+            "Offline" => false,
+            _ => null
+        };
+
+        isOnline = value;
+        await table.ReloadServerData();
     }
 }

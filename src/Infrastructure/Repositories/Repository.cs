@@ -41,4 +41,6 @@ public abstract class Repository<TPoco> where TPoco : class, IPoco
     }
     
     protected async Task<int> Count(FilterDefinition<TPoco> filter) => (int)await collection.CountDocumentsAsync(filter);
+
+    protected void ConfigureCollection(Action<IMongoCollection<TPoco>> configurator) => configurator(collection);
 }

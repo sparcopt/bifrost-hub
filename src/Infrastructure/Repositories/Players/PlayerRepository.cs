@@ -6,16 +6,18 @@ using Application.Features.Players.GetAllPlayers;
 using MongoDB.Driver;
 using Pocos;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using Domain = Application.Features.Players.Domain;
 using SortDirection = Application.Common.SortDirection;
 
 public class PlayerRepository : Repository<Player>, IPlayerRepository
 {
     private const string CollectionName = "players";
-    private readonly IMongoCollection<Player> collection;
-    
+
     public PlayerRepository(IMongoDatabase database) : base(database, CollectionName)
-    { }
+    {
+        ConfigureCollection(CreateIndexes);
+    }
 
     public async Task Save(Domain.Player player) => await Upsert(player.ToPoco());
 
@@ -46,7 +48,14 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
 
         if (!string.IsNullOrEmpty(name))
         {
-            filter = builder.Eq(p => p.Name, name);
+            /* Remarks
+            - Player collection is not expected to grow out of control
+            - Regex provides a better search experience than the default text/stopword Mongo search
+            - By using a left anchor (^{name}), a full index scan is avoided
+              - This limits the search to the first word, which is okay for player names
+            */
+            var regex = new Regex($"^{name.ToLowerInvariant()}");
+            filter = builder.Regex(p => p.NameToken, regex);
         }
         
         if (isOnline != null)
@@ -66,7 +75,7 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
         
         Expression<Func<Player, object>> field = sort.Field switch
         {
-            PlayerSortField.Name => player => player.Name,
+            PlayerSortField.Name => player => player.NameToken,
             PlayerSortField.IsOnline => player => player.IsOnline
         };
         
@@ -76,5 +85,17 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
             SortDirection.Ascending => builder.Ascending(field),
             SortDirection.Descending => builder.Descending(field)
         };
+    }
+
+    private void CreateIndexes(IMongoCollection<Player> collection)
+    {
+        var onlineNameIndex = Builders<Player>.IndexKeys
+            .Ascending(x => x.IsOnline)
+            .Ascending(x => x.NameToken);
+        collection.Indexes.CreateOne(new CreateIndexModel<Player>(onlineNameIndex));
+        var nameOnlineIndex = Builders<Player>.IndexKeys
+            .Ascending(x => x.NameToken)
+            .Ascending(x => x.IsOnline);
+        collection.Indexes.CreateOne(new CreateIndexModel<Player>(nameOnlineIndex));
     }
 }
