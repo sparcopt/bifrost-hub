@@ -76,7 +76,9 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
         Expression<Func<Player, object>> field = sort.Field switch
         {
             PlayerSortField.Name => player => player.NameToken,
-            PlayerSortField.IsOnline => player => player.IsOnline
+            PlayerSortField.IsOnline => player => player.IsOnline,
+            PlayerSortField.LastOnlineDate => player => player.LastOnlineDate,
+            PlayerSortField.CreatedDate => player => player.CreatedDate 
         };
         
         var builder = Builders<Player>.Sort;
@@ -91,11 +93,15 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
     {
         var onlineNameIndex = Builders<Player>.IndexKeys
             .Ascending(x => x.IsOnline)
+            .Ascending(x => x.LastOnlineDate)
+            .Ascending(x => x.CreatedDate)
             .Ascending(x => x.NameToken);
         collection.Indexes.CreateOne(new CreateIndexModel<Player>(onlineNameIndex));
         var nameOnlineIndex = Builders<Player>.IndexKeys
             .Ascending(x => x.NameToken)
-            .Ascending(x => x.IsOnline);
+            .Ascending(x => x.IsOnline)
+            .Ascending(x => x.LastOnlineDate)
+            .Ascending(x => x.CreatedDate);
         collection.Indexes.CreateOne(new CreateIndexModel<Player>(nameOnlineIndex));
     }
 }

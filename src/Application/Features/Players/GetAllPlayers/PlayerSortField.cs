@@ -3,5 +3,7 @@
 public enum PlayerSortField
 {
     Name = 1,
-    IsOnline = 2
+    IsOnline = 2,
+    LastOnlineDate = 3,
+    CreatedDate = 4
 }

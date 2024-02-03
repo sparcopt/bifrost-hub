@@ -26,9 +26,18 @@
         <MudTh>
             <MudTableSortLabel SortLabel="@StatusSortLabel" T="Player">Status</MudTableSortLabel>
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@LastOnlineSortLabel" T="Player">Last Online</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@RegistrationDateSortLabel" T="Player">Registration Date</MudTableSortLabel>
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Name">
+            <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Medium" />
+            @context.Name
+        </MudTd>
         <MudTd DataLabel="Status" Class="d-flex flex-column gap-0">
             @if (context.IsOnline)
             {
@@ -37,9 +46,14 @@
             else
             {
                 <MudChip Text="Offline" Variant="Variant.Outlined" Color="Color.Secondary" Style="max-width: fit-content;">Offline</MudChip>
-                <MudText Typo="Typo.caption">Last online: @context.LastOnlineDate</MudText>
             }
         </MudTd>
+        <MudTd DataLabel="LastOnline">
+            <MudTooltip Placement="Placement.Top" Text="@context.LastOnlineDate.ToString()">
+                @GetLastOnlineValue(context.LastOnlineDate)
+            </MudTooltip>
+        </MudTd>
+        <MudTd DataLabel="RegistrationDate">@context.CreatedDate</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -56,6 +70,8 @@
 
     private const string NameSortLabel = nameof(NameSortLabel);
     private const string StatusSortLabel = nameof(StatusSortLabel);
+    private const string LastOnlineSortLabel = nameof(LastOnlineSortLabel);
+    private const string RegistrationDateSortLabel = nameof(RegistrationDateSortLabel);
     private MudTable<Player> table;
     private string searchText;
     private bool? isOnline;
@@ -85,9 +101,17 @@
         var field = sortLabel switch
         {
             NameSortLabel => PlayerSortField.Name,
-            StatusSortLabel => PlayerSortField.IsOnline
+            StatusSortLabel => PlayerSortField.IsOnline,
+            LastOnlineSortLabel => PlayerSortField.LastOnlineDate,
+            RegistrationDateSortLabel => PlayerSortField.CreatedDate
         };
 
+        if (field is PlayerSortField.LastOnlineDate)
+        {
+            // Last Online is displayed as hour/day difference VS absolute date, revert sort direction
+            direction = direction == SortDirection.Ascending ? SortDirection.Descending : SortDirection.Ascending;
+        }
+        
         return new Sort<PlayerSortField>(field, direction.ToDomain());
     }
 
@@ -108,5 +132,18 @@
 
         isOnline = value;
         await table.ReloadServerData();
+    }
+
+    private string GetLastOnlineValue(DateTime lastOnlineDate)
+    {
+        var timeDifference = DateTime.UtcNow - lastOnlineDate;
+        if (timeDifference.TotalHours < 24)
+        {
+            var hoursDifference = (int)timeDifference.TotalHours;
+            return $"{hoursDifference} hours ago";
+        }
+
+        var daysDifference = (int)timeDifference.TotalDays;
+        return $"{daysDifference} days ago";
     }
 }
