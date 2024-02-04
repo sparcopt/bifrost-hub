@@ -7,5 +7,5 @@ public interface IPlayerRepository
 {
     Task Save(Player player);
     Task<Player> GetById(Guid id);
-    Task<PagedResult<Player>> Search(string name, bool? isOnline = null, Sort<PlayerSortField> sort = null, int page = 1, int pageSize = 60);
+    Task<PagedResult<Player>> Search(int page, int pageSize, string name, bool? isOnline = null, Sort<PlayerSortField> sort = null);
 }

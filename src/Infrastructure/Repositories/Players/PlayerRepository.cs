@@ -23,11 +23,11 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
 
     public async Task<Domain.Player> GetById(Guid id) => (await FirstOrDefault(p => p.Id == id))?.ToDomain();
     public async Task<PagedResult<Domain.Player>> Search(
+        int page,
+        int pageSize,
         string name,
         bool? isOnline = null,
-        Sort<PlayerSortField> sort = null,
-        int page = 1,
-        int pageSize = 60)
+        Sort<PlayerSortField> sort = null)
     {
         var filterDefinition = BuildFilter(name, isOnline);
         var sortDefinition = BuildSort(sort);

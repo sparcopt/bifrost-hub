@@ -17,7 +17,7 @@ public static class GetAllPlayersQueryHandler
 {
     public static async Task<Page<Player>> Handle(GetAllPlayersQuery query, IPlayerRepository playerRepository)
     {
-        var pagedResult = await playerRepository.Search(query.Name, query.IsOnline, query.Sort, query.Page, query.PageSize);
+        var pagedResult = await playerRepository.Search(query.Page, query.PageSize, query.Name, query.IsOnline, query.Sort);
 
         return new Page<Player>(
             pagedResult.PageNumber,
