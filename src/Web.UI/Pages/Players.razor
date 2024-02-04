@@ -19,10 +19,10 @@
     <ToolBarContent>
         <MudText Typo="Typo.h5">Players</MudText>
         <MudSpacer/>
-        <MudTextField Margin="Margin.None" T="string" DebounceInterval="500" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search player names..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="flex-grow-0 mt-0 mud-input-no-margin"></MudTextField>
+        <MudTextField T="string" DebounceInterval="500" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search player names..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="flex-grow-0 mt-0 mud-input-no-margin"></MudTextField>
         <MudChipSet SelectedChipChanged="@(async s => await OnStatusChanged(s))" Filter="true">
             <MudChip Text="Online" Variant="Variant.Text" Color="Color.Success">Online</MudChip>
-            <MudChip Text="Offline" Variant="Variant.Text" Color="Color.Secondary">Offline</MudChip>
+            <MudChip Text="Offline" Variant="Variant.Text" Color="Color.Default">Offline</MudChip>
         </MudChipSet>
     </ToolBarContent>
     <HeaderContent>
@@ -41,8 +41,10 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
-            <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Medium" />
-            @context.Name
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Color="@GetStatusColor(context.IsOnline)" Size="Size.Medium"/>
+                @context.Name
+            </MudStack>
         </MudTd>
         <MudTd DataLabel="Status" Class="d-flex flex-column gap-0">
             @if (context.IsOnline)
@@ -51,7 +53,7 @@
             }
             else
             {
-                <MudChip Text="Offline" Variant="Variant.Outlined" Color="Color.Secondary" Style="max-width: fit-content;">Offline</MudChip>
+                <MudChip Text="Offline" Variant="Variant.Outlined" Color="Color.Default" Style="max-width: fit-content;">Offline</MudChip>
             }
         </MudTd>
         <MudTd DataLabel="LastOnline">
@@ -143,13 +145,29 @@
     private string GetLastOnlineValue(DateTime lastOnlineDate)
     {
         var timeDifference = DateTime.UtcNow - lastOnlineDate;
+
+        if (timeDifference.TotalMinutes < 60)
+        {
+            var minutes = (int)timeDifference.TotalMinutes;
+            return $"{minutes} minutes ago";
+        }
+        
         if (timeDifference.TotalHours < 24)
         {
-            var hoursDifference = (int)timeDifference.TotalHours;
-            return $"{hoursDifference} hours ago";
+            var hours = (int)timeDifference.TotalHours;
+            return $"{hours} hours ago";
         }
 
-        var daysDifference = (int)timeDifference.TotalDays;
-        return $"{daysDifference} days ago";
+        if (timeDifference.TotalDays < 365)
+        {
+            var days = (int)timeDifference.TotalDays;
+            return $"{days} days ago";
+        }
+
+        var years = (int)(timeDifference.TotalDays / 365);
+        var yearDays = (int)(timeDifference.TotalDays % 365);
+        return $"{years} years and {yearDays} days ago";
     }
+
+    private Color GetStatusColor(bool isOnline) => isOnline ? Color.Success : Color.Default;
 }
