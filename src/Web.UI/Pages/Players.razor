@@ -9,15 +9,21 @@
 @using SortDirection = MudBlazor.SortDirection
 @inject IMessageBus mediator
 
+<style>
+    .mud-input-no-margin .mud-input-text {
+        margin-top: 0px !important;
+    }
+</style>
+
 <MudTable ServerData="@(new Func<TableState, Task<TableData<Player>>>(ServerReload))" Dense="false" Hover="true" @ref="table">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Players</MudText>
+        <MudText Typo="Typo.h5">Players</MudText>
         <MudSpacer/>
+        <MudTextField Margin="Margin.None" T="string" DebounceInterval="500" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search player names..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="flex-grow-0 mt-0 mud-input-no-margin"></MudTextField>
         <MudChipSet SelectedChipChanged="@(async s => await OnStatusChanged(s))" Filter="true">
             <MudChip Text="Online" Variant="Variant.Text" Color="Color.Success">Online</MudChip>
             <MudChip Text="Offline" Variant="Variant.Text" Color="Color.Secondary">Offline</MudChip>
         </MudChipSet>
-        <MudTextField T="string" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
