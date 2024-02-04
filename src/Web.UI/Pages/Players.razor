@@ -3,6 +3,7 @@
 @using BifrostHub.Application.Features.Players.Dto
 @using BifrostHub.Application.Features.Players.GetAllPlayers
 @using BifrostHub.Application.Common
+@using BifrostHub.Application.Features.Players.GetPlayerCount
 @using BifrostHub.Web.UI.Extensions
 @using Color = MudBlazor.Color
 @using Size = MudBlazor.Size
@@ -14,6 +15,42 @@
         margin-top: 0px !important;
     }
 </style>
+
+<MudGrid Justify="Justify.SpaceEvenly" Class="mb-2">
+    <MudItem sm="4" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold;">Online Players</MudText>
+                <MudText Typo="Typo.h5">@onlinePlayerCount</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+    <MudItem sm="4" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@Icons.Material.Outlined.People" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold">Offline Players</MudText>
+                <MudText Typo="Typo.h5">@offlinePlayerCount</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+    <MudItem sm="4" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold">Total Players</MudText>
+                <MudText Typo="Typo.h5">@totalPlayerCount</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
 <MudTable ServerData="@(new Func<TableState, Task<TableData<Player>>>(ServerReload))" Dense="false" Hover="true" @ref="table">
     <ToolBarContent>
@@ -84,6 +121,8 @@
 
 @code {
 
+    private bool isFirstLoad = true;
+    
     private const string NameSortLabel = nameof(NameSortLabel);
     private const string StatusSortLabel = nameof(StatusSortLabel);
     private const string LastOnlineSortLabel = nameof(LastOnlineSortLabel);
@@ -92,6 +131,15 @@
     private string searchText;
     private bool? isOnline;
 
+    private int onlinePlayerCount;
+    private int totalPlayerCount;
+    private int offlinePlayerCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        onlinePlayerCount = await mediator.InvokeAsync<int>(new GetPlayerCountQuery { IsOnline = true});
+    }
+    
     private async Task<TableData<Player>> ServerReload(TableState state)
     {
         var query = new GetAllPlayersQuery
@@ -104,9 +152,23 @@
         };
 
         var pagedPlayers = await mediator.InvokeAsync<Page<Player>>(query);
+
+        if (isFirstLoad)
+        {
+            UpdatePlayerCountValues(pagedPlayers.TotalItems);
+            isFirstLoad = false;
+        }
+        
         return new TableData<Player> { TotalItems = pagedPlayers.TotalItems, Items = pagedPlayers.Entries };
     }
 
+    private void UpdatePlayerCountValues(int totalCount)
+    {
+        totalPlayerCount = totalCount;
+        offlinePlayerCount = totalPlayerCount - onlinePlayerCount;
+        StateHasChanged();
+    }
+    
     private Sort<PlayerSortField> CreateSort(string sortLabel, SortDirection direction)
     {
         if (string.IsNullOrEmpty(sortLabel) || direction is SortDirection.None)

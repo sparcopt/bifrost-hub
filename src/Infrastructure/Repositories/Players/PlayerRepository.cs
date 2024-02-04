@@ -41,6 +41,12 @@ public class PlayerRepository : Repository<Player>, IPlayerRepository
             players.Select(p => p.ToDomain()));
     }
 
+    public async Task<int> GetTotalCount(bool? isOnline)
+    {
+        var filterDefinition = BuildFilter(null, isOnline);
+        return await Count(filterDefinition);
+    }
+
     private FilterDefinition<Player> BuildFilter(string name, bool? isOnline)
     {
         var builder = Builders<Player>.Filter;

@@ -8,4 +8,5 @@ public interface IPlayerRepository
     Task Save(Player player);
     Task<Player> GetById(Guid id);
     Task<PagedResult<Player>> Search(int page, int pageSize, string name, bool? isOnline = null, Sort<PlayerSortField> sort = null);
+    Task<int> GetTotalCount(bool? isOnline);
 }
