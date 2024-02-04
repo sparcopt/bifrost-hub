@@ -38,6 +38,7 @@
         <MudTh>
             <MudTableSortLabel SortLabel="@RegistrationDateSortLabel" T="Player">Registration Date</MudTableSortLabel>
         </MudTh>
+        <MudTh>Details</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Name">
@@ -65,6 +66,9 @@
             <MudTooltip Placement="Placement.Top" Text="@context.CreatedDate.ToString()">
                 @context.CreatedDate.ToShortDateString()
             </MudTooltip>
+        </MudTd>
+        <MudTd>
+            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary">View</MudButton>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
