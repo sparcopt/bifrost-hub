@@ -57,11 +57,15 @@
             }
         </MudTd>
         <MudTd DataLabel="LastOnline">
-            <MudTooltip Placement="Placement.Top" Text="@context.LastOnlineDate.ToString()">
-                @GetLastOnlineValue(context.LastOnlineDate)
+            <MudTooltip Placement="Placement.Top" Text="@GetLastOnlineToolTipValue(context.IsOnline, context.LastOnlineDate)">
+                @GetLastOnlineValue(context.IsOnline, context.LastOnlineDate)
             </MudTooltip>
         </MudTd>
-        <MudTd DataLabel="RegistrationDate">@context.CreatedDate</MudTd>
+        <MudTd DataLabel="RegistrationDate">
+            <MudTooltip Placement="Placement.Top" Text="@context.CreatedDate.ToString()">
+                @context.CreatedDate.ToShortDateString()
+            </MudTooltip>
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -142,8 +146,16 @@
         await table.ReloadServerData();
     }
 
-    private string GetLastOnlineValue(DateTime lastOnlineDate)
+    private string GetLastOnlineToolTipValue(bool isOnline, DateTime lastOnlineDate) =>
+        isOnline ? string.Empty : lastOnlineDate.ToString();
+    
+    private string GetLastOnlineValue(bool isOnline, DateTime lastOnlineDate)
     {
+        if (isOnline)
+        {
+            return "Now";
+        }
+        
         var timeDifference = DateTime.UtcNow - lastOnlineDate;
 
         if (timeDifference.TotalMinutes < 60)
