@@ -52,14 +52,14 @@
     </MudItem>
 </MudGrid>
 
-<MudTable ServerData="@(new Func<TableState, Task<TableData<Player>>>(ServerReload))" Dense="false" Hover="true" @ref="table">
+<MudTable ServerData="@SearchPlayers" Dense="false" Hover="true" @ref="table">
     <ToolBarContent>
         <MudText Typo="Typo.h5">Players</MudText>
         <MudSpacer/>
         <MudTextField T="string" DebounceInterval="500" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search player names..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="flex-grow-0 mt-0 mud-input-no-margin"></MudTextField>
         <MudChipSet SelectedChipChanged="@(async s => await OnStatusChanged(s))" Filter="true">
-            <MudChip Text="Online" Variant="Variant.Text" Color="Color.Success">Online</MudChip>
-            <MudChip Text="Offline" Variant="Variant.Text" Color="Color.Default">Offline</MudChip>
+            <MudChip Text="@OnlineChipText" Variant="Variant.Text" Color="Color.Success">Online</MudChip>
+            <MudChip Text="@OfflineChipText" Variant="Variant.Text" Color="Color.Default">Offline</MudChip>
         </MudChipSet>
     </ToolBarContent>
     <HeaderContent>
@@ -123,24 +123,26 @@
 
     private bool isFirstLoad = true;
     
+    private int onlinePlayerCount;
+    private int totalPlayerCount;
+    private int offlinePlayerCount;
+    
     private const string NameSortLabel = nameof(NameSortLabel);
     private const string StatusSortLabel = nameof(StatusSortLabel);
     private const string LastOnlineSortLabel = nameof(LastOnlineSortLabel);
     private const string RegistrationDateSortLabel = nameof(RegistrationDateSortLabel);
+    private const string OnlineChipText = "Online";
+    private const string OfflineChipText = "Offline";
     private MudTable<Player> table;
     private string searchText;
     private bool? isOnline;
-
-    private int onlinePlayerCount;
-    private int totalPlayerCount;
-    private int offlinePlayerCount;
-
+    
     protected override async Task OnInitializedAsync()
     {
         onlinePlayerCount = await mediator.InvokeAsync<int>(new GetPlayerCountQuery { IsOnline = true});
     }
     
-    private async Task<TableData<Player>> ServerReload(TableState state)
+    private async Task<TableData<Player>> SearchPlayers(TableState state)
     {
         var query = new GetAllPlayersQuery
         {
@@ -169,7 +171,7 @@
         StateHasChanged();
     }
     
-    private Sort<PlayerSortField> CreateSort(string sortLabel, SortDirection direction)
+    private static Sort<PlayerSortField> CreateSort(string sortLabel, SortDirection direction)
     {
         if (string.IsNullOrEmpty(sortLabel) || direction is SortDirection.None)
         {
@@ -203,8 +205,8 @@
     {
         bool? value = statusChip?.Text switch
         {
-            "Online" => true,
-            "Offline" => false,
+            OnlineChipText => true,
+            OfflineChipText => false,
             _ => null
         };
 
@@ -212,12 +214,12 @@
         await table.ReloadServerData();
     }
 
-    private string GetLastOnlineToolTipValue(bool isOnline, DateTime lastOnlineDate) =>
-        isOnline ? string.Empty : lastOnlineDate.ToString();
+    private static string GetLastOnlineToolTipValue(bool playerIsOnline, DateTime lastOnlineDate) =>
+        playerIsOnline ? string.Empty : lastOnlineDate.ToString();
     
-    private string GetLastOnlineValue(bool isOnline, DateTime lastOnlineDate)
+    private static string GetLastOnlineValue(bool playerIsOnline, DateTime lastOnlineDate)
     {
-        if (isOnline)
+        if (playerIsOnline)
         {
             return "Now";
         }
@@ -247,5 +249,5 @@
         return $"{years} years and {yearDays} days ago";
     }
 
-    private Color GetStatusColor(bool isOnline) => isOnline ? Color.Success : Color.Default;
+    private static Color GetStatusColor(bool playerIsOnline) => playerIsOnline ? Color.Success : Color.Default;
 }
