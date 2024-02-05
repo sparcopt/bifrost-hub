@@ -14,7 +14,8 @@ public static class MappingExtensions
             IsOnline = player.IsOnline,
             LastOnlineDate = player.LastOnlineDate,
             CreatedDate = player.CreatedDate,
-            UpdatedDate = player.UpdatedDate
+            UpdatedDate = player.UpdatedDate,
+            NameToken = player.Name.ToLowerInvariant()
         };
 
     public static Domain.Player ToDomain(this Player player) =>

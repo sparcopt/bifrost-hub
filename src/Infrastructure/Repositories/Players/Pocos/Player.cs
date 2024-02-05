@@ -9,4 +9,5 @@ public class Player : IPoco
     public DateTime LastOnlineDate { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime UpdatedDate { get; set; }
+    public string NameToken { get; set; }
 }

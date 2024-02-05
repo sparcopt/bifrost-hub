@@ -1,6 +1,253 @@
 ﻿@page "/Players"
-<h3>Players</h3>
+@using Wolverine
+@using BifrostHub.Application.Features.Players.Dto
+@using BifrostHub.Application.Features.Players.GetAllPlayers
+@using BifrostHub.Application.Common
+@using BifrostHub.Application.Features.Players.GetPlayerCount
+@using BifrostHub.Web.UI.Extensions
+@using Color = MudBlazor.Color
+@using Size = MudBlazor.Size
+@using SortDirection = MudBlazor.SortDirection
+@inject IMessageBus mediator
+
+<style>
+    .mud-input-no-margin .mud-input-text {
+        margin-top: 0px !important;
+    }
+</style>
+
+<MudGrid Justify="Justify.SpaceEvenly" Class="mb-2">
+    <MudItem sm="4" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold;">Online Players</MudText>
+                <MudText Typo="Typo.h5">@onlinePlayerCount</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+    <MudItem sm="4" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@Icons.Material.Outlined.People" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold">Offline Players</MudText>
+                <MudText Typo="Typo.h5">@offlinePlayerCount</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+    <MudItem sm="4" xs="12">
+        <MudPaper Class="mud-paper mud-elevation-1 py-4 px-6 rounded-lg d-flex align-center">
+            <MudPaper Class="pa-1" Elevation="0" Style="background-color: var(--mud-palette-tertiary-darken)">
+                <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large"/>
+            </MudPaper>
+            <MudStack Class="flex-grow-1 ml-3" Spacing="0">
+                <MudText Typo="Typo.body2" Class="grey-text text-darken-1" Style="font-weight: bold">Total Players</MudText>
+                <MudText Typo="Typo.h5">@totalPlayerCount</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudTable ServerData="@SearchPlayers" Dense="false" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h5">Players</MudText>
+        <MudSpacer/>
+        <MudTextField T="string" DebounceInterval="500" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search player names..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="flex-grow-0 mt-0 mud-input-no-margin"></MudTextField>
+        <MudChipSet SelectedChipChanged="@(async s => await OnStatusChanged(s))" Filter="true">
+            <MudChip Text="@OnlineChipText" Variant="Variant.Text" Color="Color.Success">Online</MudChip>
+            <MudChip Text="@OfflineChipText" Variant="Variant.Text" Color="Color.Default">Offline</MudChip>
+        </MudChipSet>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@NameSortLabel" T="Player">Name</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@StatusSortLabel" T="Player">Status</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@LastOnlineSortLabel" T="Player">Last Online</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="@RegistrationDateSortLabel" T="Player">Registration Date</MudTableSortLabel>
+        </MudTh>
+        <MudTh>Details</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Color="@GetStatusColor(context.IsOnline)" Size="Size.Medium"/>
+                @context.Name
+            </MudStack>
+        </MudTd>
+        <MudTd DataLabel="Status" Class="d-flex flex-column gap-0">
+            @if (context.IsOnline)
+            {
+                <MudChip Text="Online" Variant="Variant.Outlined" Color="Color.Success" Style="max-width: fit-content;">Online</MudChip>
+            }
+            else
+            {
+                <MudChip Text="Offline" Variant="Variant.Outlined" Color="Color.Default" Style="max-width: fit-content;">Offline</MudChip>
+            }
+        </MudTd>
+        <MudTd DataLabel="LastOnline">
+            <MudTooltip Placement="Placement.Top" Text="@GetLastOnlineToolTipValue(context.IsOnline, context.LastOnlineDate)">
+                @GetLastOnlineValue(context.IsOnline, context.LastOnlineDate)
+            </MudTooltip>
+        </MudTd>
+        <MudTd DataLabel="RegistrationDate">
+            <MudTooltip Placement="Placement.Top" Text="@context.CreatedDate.ToString()">
+                @context.CreatedDate.ToShortDateString()
+            </MudTooltip>
+        </MudTd>
+        <MudTd>
+            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary">View</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
 
 @code {
+
+    private bool isFirstLoad = true;
     
+    private int onlinePlayerCount;
+    private int totalPlayerCount;
+    private int offlinePlayerCount;
+    
+    private const string NameSortLabel = nameof(NameSortLabel);
+    private const string StatusSortLabel = nameof(StatusSortLabel);
+    private const string LastOnlineSortLabel = nameof(LastOnlineSortLabel);
+    private const string RegistrationDateSortLabel = nameof(RegistrationDateSortLabel);
+    private const string OnlineChipText = "Online";
+    private const string OfflineChipText = "Offline";
+    private MudTable<Player> table;
+    private string searchText;
+    private bool? isOnline;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        onlinePlayerCount = await mediator.InvokeAsync<int>(new GetPlayerCountQuery { IsOnline = true});
+    }
+    
+    private async Task<TableData<Player>> SearchPlayers(TableState state)
+    {
+        var query = new GetAllPlayersQuery
+        {
+            Name = searchText,
+            IsOnline = isOnline,
+            Sort = CreateSort(state.SortLabel, state.SortDirection),
+            Page = state.Page + 1,
+            PageSize = state.PageSize
+        };
+
+        var pagedPlayers = await mediator.InvokeAsync<Page<Player>>(query);
+
+        if (isFirstLoad)
+        {
+            UpdatePlayerCountValues(pagedPlayers.TotalItems);
+            isFirstLoad = false;
+        }
+        
+        return new TableData<Player> { TotalItems = pagedPlayers.TotalItems, Items = pagedPlayers.Entries };
+    }
+
+    private void UpdatePlayerCountValues(int totalCount)
+    {
+        totalPlayerCount = totalCount;
+        offlinePlayerCount = totalPlayerCount - onlinePlayerCount;
+        StateHasChanged();
+    }
+    
+    private static Sort<PlayerSortField> CreateSort(string sortLabel, SortDirection direction)
+    {
+        if (string.IsNullOrEmpty(sortLabel) || direction is SortDirection.None)
+        {
+            return null;
+        }
+
+        var field = sortLabel switch
+        {
+            NameSortLabel => PlayerSortField.Name,
+            StatusSortLabel => PlayerSortField.IsOnline,
+            LastOnlineSortLabel => PlayerSortField.LastOnlineDate,
+            RegistrationDateSortLabel => PlayerSortField.CreatedDate
+        };
+
+        if (field is PlayerSortField.LastOnlineDate)
+        {
+            // Last Online is displayed as hour/day difference VS absolute date, revert sort direction
+            direction = direction == SortDirection.Ascending ? SortDirection.Descending : SortDirection.Ascending;
+        }
+        
+        return new Sort<PlayerSortField>(field, direction.ToDomain());
+    }
+
+    private async Task OnSearch(string text)
+    {
+        searchText = text;
+        await table.ReloadServerData();
+    }
+
+    private async Task OnStatusChanged(MudChip statusChip)
+    {
+        bool? value = statusChip?.Text switch
+        {
+            OnlineChipText => true,
+            OfflineChipText => false,
+            _ => null
+        };
+
+        isOnline = value;
+        await table.ReloadServerData();
+    }
+
+    private static string GetLastOnlineToolTipValue(bool playerIsOnline, DateTime lastOnlineDate) =>
+        playerIsOnline ? string.Empty : lastOnlineDate.ToString();
+    
+    private static string GetLastOnlineValue(bool playerIsOnline, DateTime lastOnlineDate)
+    {
+        if (playerIsOnline)
+        {
+            return "Now";
+        }
+        
+        var timeDifference = DateTime.UtcNow - lastOnlineDate;
+
+        if (timeDifference.TotalMinutes < 60)
+        {
+            var minutes = (int)timeDifference.TotalMinutes;
+            return $"{minutes} minutes ago";
+        }
+        
+        if (timeDifference.TotalHours < 24)
+        {
+            var hours = (int)timeDifference.TotalHours;
+            return $"{hours} hours ago";
+        }
+
+        if (timeDifference.TotalDays < 365)
+        {
+            var days = (int)timeDifference.TotalDays;
+            return $"{days} days ago";
+        }
+
+        var years = (int)(timeDifference.TotalDays / 365);
+        var yearDays = (int)(timeDifference.TotalDays % 365);
+        return $"{years} years and {yearDays} days ago";
+    }
+
+    private static Color GetStatusColor(bool playerIsOnline) => playerIsOnline ? Color.Success : Color.Default;
 }

@@ -1,6 +1,6 @@
 ﻿namespace BifrostHub.Application.Features.Players.Dto;
 
-public static class PlayerExtensions
+public static class OnlinePlayerExtensions
 {
     public static int GetHealthAsInteger(this OnlinePlayer onlinePlayer) =>
         (int)Math.Ceiling(onlinePlayer.Health);

@@ -6,6 +6,7 @@ using Extensions;
 using global::OdinEye.Models.Api;
 using System.Net.Http.Json;
 using BossDetailsDto = Application.Features.BossDetails.Dto.BossDetails;
+using Player = global::OdinEye.Models.Api.Player;
 using ServerDetailsDto = Application.Features.ServerDetails.Dto.ServerDetails;
 using WorldDetailsDto = Application.Features.WorldDetails.Dto.WorldDetails;
 
