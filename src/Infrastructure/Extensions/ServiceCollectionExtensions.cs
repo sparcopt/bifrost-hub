@@ -14,6 +14,9 @@ using Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Repositories.Players;
 using Services;
@@ -95,6 +98,11 @@ public static class ServiceCollectionExtensions
             {
                 var options = provider.GetRequiredService<IOptions<MongoOptions>>().Value;
                 var url = new MongoUrl(options.ConnectionString);
+                
+#pragma warning disable 618
+                BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
+                BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+                
                 var client = new MongoClient(url);
                 return client.GetDatabase(url.DatabaseName);
             })
