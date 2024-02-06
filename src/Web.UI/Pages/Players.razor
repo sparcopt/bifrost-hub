@@ -9,6 +9,7 @@
 @using Size = MudBlazor.Size
 @using SortDirection = MudBlazor.SortDirection
 @inject IMessageBus mediator
+@inject NavigationManager navigationManager
 
 <style>
     .mud-input-no-margin .mud-input-text {
@@ -105,7 +106,7 @@
             </MudTooltip>
         </MudTd>
         <MudTd>
-            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary">View</MudButton>
+            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" OnClick="@(() => NavigateToPlayerDetails(context.Id))">View</MudButton>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
@@ -250,4 +251,9 @@
     }
 
     private static Color GetStatusColor(bool playerIsOnline) => playerIsOnline ? Color.Success : Color.Default;
+    
+    private void NavigateToPlayerDetails(Guid id)
+    {
+        navigationManager.NavigateTo($"playerDetails/{id}");
+    }
 }
