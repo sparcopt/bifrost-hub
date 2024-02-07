@@ -5,16 +5,23 @@
 @using Wolverine
 @using BifrostHub.Application.Features.Players.GetPlayerById
 @using BifrostHub.Application.Features.Players.Dto
+@using BifrostHub.Application.Features.Players.GetSteamUserProfile
 @using BifrostHub.Web.UI.Extensions
 @inject IMessageBus mediator
 
 <MudGrid Class="mb-2" Style="height: 400px">
     
     <MudItem xs="12" sm="4" Class="d-flex flex-column">
-        <MudPaper Class="d-flex flex-column flex-grow-1 dmud-paper mud-elevation-1 py-4 px-6 rounded-lg">
-            <MudStack AlignItems="AlignItems.Center">
+        <MudPaper Class="d-flex flex-column flex-grow-1 dmud-paper mud-elevation-1 py-4 px-6 rounded-lg gap-1">
+            <MudStack AlignItems="AlignItems.Center" Spacing="0">
                 <MudImage Elevation="25" Height="164" Width="164" Class="rounded-lg" Src="steamAvatars/76561198006471741.jpg.jpg"/>
                 <MudText Align="Align.Center" Typo="Typo.h6">@player?.Name</MudText>
+                <MudStack Row="true" Spacing="1">
+                    <MudIcon Icon="@Icons.Custom.Brands.Steam" Size="Size.Small"/>
+                    <MudLink Href="@steamUserProfile?.ProfileUrl">
+                        <MudText Align="Align.Center" Typo="Typo.body1">@steamUserProfile?.Username</MudText>
+                    </MudLink>
+                </MudStack>
             </MudStack>
             <MudDivider Light="true" DividerType="DividerType.FullWidth"/>
             <MudStack Spacing="1">
@@ -57,13 +64,17 @@
 
 @code {
     private Player player;
+    private SteamUserProfile steamUserProfile;
     
     [Parameter]
     public Guid Id { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        var query = new GetPlayerByIdQuery { Id = Id };
-        player = await mediator.InvokeAsync<Player>(query);
+        var getPlayerQuery = new GetPlayerByIdQuery { Id = Id };
+        player = await mediator.InvokeAsync<Player>(getPlayerQuery);
+
+        var getSteamProfileQuery = new GetSteamUserProfileQuery { SteamId = player.SteamId };
+        steamUserProfile = await mediator.InvokeAsync<SteamUserProfile>(getSteamProfileQuery);
     }
 }
