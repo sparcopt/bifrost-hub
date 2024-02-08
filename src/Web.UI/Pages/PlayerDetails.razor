@@ -33,11 +33,15 @@
                 </MudStack>
                 <MudStack Row="true">
                     <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Last Online:</MudText>
-                    <MudText Typo="Typo.body1">@player?.GetLastOnlineText()</MudText>
+                    <MudTooltip Placement="Placement.Top" Text="@player?.GetLastOnlineToolTipText()">
+                        <MudText Typo="Typo.body1">@player?.GetLastOnlineText()</MudText>
+                    </MudTooltip>
                 </MudStack>
                 <MudStack Row="true">
                     <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Registration date:</MudText>
-                    <MudText Typo="Typo.body1">@player?.CreatedDate.ToShortDateString()</MudText>
+                    <MudTooltip Placement="Placement.Top" Text="@player?.CreatedDate.ToString()">
+                        <MudText Typo="Typo.body1">@player?.CreatedDate.ToShortDateString()</MudText>
+                    </MudTooltip>
                 </MudStack>
                 <MudStack Row="true">
                     <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Linked players:</MudText>

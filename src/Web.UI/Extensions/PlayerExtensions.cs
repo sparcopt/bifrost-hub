@@ -37,4 +37,6 @@ public static class PlayerExtensions
     }
 
     public static string GetOnlineStatusText(this Player player) => player.IsOnline ? "Online" : "Offline";
+    
+    public static string GetLastOnlineToolTipText(this Player player) => player.IsOnline ? string.Empty : player.LastOnlineDate.ToString();
 }

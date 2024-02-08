@@ -89,7 +89,7 @@
             <MudChip Text="@(context.IsOnline ? OnlineChipText : OfflineChipText)" Variant="Variant.Outlined" Color="@GetStatusColor(context.IsOnline)" Style="max-width: fit-content;"/>
         </MudTd>
         <MudTd DataLabel="LastOnline">
-            <MudTooltip Placement="Placement.Top" Text="@GetLastOnlineToolTipValue(context.IsOnline, context.LastOnlineDate)">
+            <MudTooltip Placement="Placement.Top" Text="@context.GetLastOnlineToolTipText()">
                 @context.GetLastOnlineText()
             </MudTooltip>
         </MudTd>
@@ -207,9 +207,6 @@
         isOnline = value;
         await table.ReloadServerData();
     }
-
-    private static string GetLastOnlineToolTipValue(bool playerIsOnline, DateTime lastOnlineDate) =>
-        playerIsOnline ? string.Empty : lastOnlineDate.ToString();
 
     private static Color GetStatusColor(bool playerIsOnline) => playerIsOnline ? Color.Success : Color.Default;
     
