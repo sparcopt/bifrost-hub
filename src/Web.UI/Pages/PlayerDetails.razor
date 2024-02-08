@@ -14,7 +14,7 @@
     <MudItem xs="12" sm="4" Class="d-flex flex-column">
         <MudPaper Class="d-flex flex-column flex-grow-1 dmud-paper mud-elevation-1 py-4 px-6 rounded-lg gap-1">
             <MudStack AlignItems="AlignItems.Center" Spacing="0">
-                <MudImage Elevation="25" Height="164" Width="164" Class="rounded-lg" Src="steamAvatars/76561198006471741.jpg.jpg"/>
+                <MudImage Elevation="25" Height="164" Width="164" Class="rounded-lg" Src="@steamUserProfile?.LocalAvatarImagePath"/>
                 <MudText Align="Align.Center" Typo="Typo.h6">@player?.Name</MudText>
                 <MudStack Row="true" Spacing="1">
                     <MudIcon Icon="@Icons.Custom.Brands.Steam" Size="Size.Small"/>
