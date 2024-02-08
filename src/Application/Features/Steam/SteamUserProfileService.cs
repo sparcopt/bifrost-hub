@@ -32,8 +32,7 @@ public class SteamUserProfileService : ISteamUserProfileService
             entry.SlidingExpiration = TimeSpan.FromMinutes(30);
 
             var profile = await steamApiClient.GetUserProfile(steamUserId);
-            var avatarFileName = $"{steamUserId}.jpg";
-            var steamAvatarPath = await fileService.DownloadRemoteImage(profile.Avatar, avatarFileName, FileService.SteamAvatarFolder);
+            var steamAvatarPath = await fileService.DownloadRemoteImage(profile.Avatar, steamUserId, FileService.SteamAvatarFolder);
             profile.LocalAvatarImagePath = steamAvatarPath;
 
             return profile;
