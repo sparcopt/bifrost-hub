@@ -11,8 +11,8 @@
 
 <MudGrid Class="mb-2" Style="height: 400px">
     
-    <MudItem xs="12" sm="4" Class="d-flex flex-column">
-        <MudPaper Class="d-flex flex-column flex-grow-1 dmud-paper mud-elevation-1 py-4 px-6 rounded-lg gap-1">
+    <MudItem xs="12" sm="4" >
+        <MudPaper Class="d-flex flex-column mud-elevation-1 py-4 px-6 rounded-lg gap-1">
             <MudStack AlignItems="AlignItems.Center" Spacing="0">
                 <MudImage Elevation="25" Height="164" Width="164" Class="rounded-lg" Src="@steamUserProfile?.LocalAvatarImagePath"/>
                 <MudText Align="Align.Center" Typo="Typo.h6">@player?.Name</MudText>
@@ -55,10 +55,8 @@
         </MudPaper>
     </MudItem>
     
-    <MudItem xs="12" sm="8" Class="d-flex flex-column">
-        <MudPaper Class="d-flex flex-column flex-grow-1 dmud-paper mud-elevation-1 py-4 px-6 rounded-lg align-center">
-            
-        </MudPaper>
+    <MudItem xs="12" sm="8" Class="d-flex">
+        <MudPaper Class="flex-grow-1 mud-elevation-1 py-4 px-6 rounded-lg align-center" />
     </MudItem>
 </MudGrid>
 
