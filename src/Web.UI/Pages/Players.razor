@@ -9,6 +9,7 @@
 @using Size = MudBlazor.Size
 @using SortDirection = MudBlazor.SortDirection
 @inject IMessageBus mediator
+@inject NavigationManager navigationManager
 
 <style>
     .mud-input-no-margin .mud-input-text {
@@ -58,8 +59,8 @@
         <MudSpacer/>
         <MudTextField T="string" DebounceInterval="500" ValueChanged="@(async s => await OnSearch(s))" Placeholder="Search player names..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="flex-grow-0 mt-0 mud-input-no-margin"></MudTextField>
         <MudChipSet SelectedChipChanged="@(async s => await OnStatusChanged(s))" Filter="true">
-            <MudChip Text="@OnlineChipText" Variant="Variant.Text" Color="Color.Success">Online</MudChip>
-            <MudChip Text="@OfflineChipText" Variant="Variant.Text" Color="Color.Default">Offline</MudChip>
+            <MudChip Text="@OnlineChipText" Variant="Variant.Text" Color="Color.Success"/>
+            <MudChip Text="@OfflineChipText" Variant="Variant.Text" Color="Color.Default"/>
         </MudChipSet>
     </ToolBarContent>
     <HeaderContent>
@@ -85,18 +86,11 @@
             </MudStack>
         </MudTd>
         <MudTd DataLabel="Status" Class="d-flex flex-column gap-0">
-            @if (context.IsOnline)
-            {
-                <MudChip Text="Online" Variant="Variant.Outlined" Color="Color.Success" Style="max-width: fit-content;">Online</MudChip>
-            }
-            else
-            {
-                <MudChip Text="Offline" Variant="Variant.Outlined" Color="Color.Default" Style="max-width: fit-content;">Offline</MudChip>
-            }
+            <MudChip Text="@(context.IsOnline ? OnlineChipText : OfflineChipText)" Variant="Variant.Outlined" Color="@GetStatusColor(context.IsOnline)" Style="max-width: fit-content;"/>
         </MudTd>
         <MudTd DataLabel="LastOnline">
-            <MudTooltip Placement="Placement.Top" Text="@GetLastOnlineToolTipValue(context.IsOnline, context.LastOnlineDate)">
-                @GetLastOnlineValue(context.IsOnline, context.LastOnlineDate)
+            <MudTooltip Placement="Placement.Top" Text="@context.GetLastOnlineToolTipText()">
+                @context.GetLastOnlineText()
             </MudTooltip>
         </MudTd>
         <MudTd DataLabel="RegistrationDate">
@@ -105,7 +99,7 @@
             </MudTooltip>
         </MudTd>
         <MudTd>
-            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary">View</MudButton>
+            <MudButton Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary" OnClick="@(() => NavigateToPlayerDetails(context.Id))">View</MudButton>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
@@ -214,40 +208,7 @@
         await table.ReloadServerData();
     }
 
-    private static string GetLastOnlineToolTipValue(bool playerIsOnline, DateTime lastOnlineDate) =>
-        playerIsOnline ? string.Empty : lastOnlineDate.ToString();
-    
-    private static string GetLastOnlineValue(bool playerIsOnline, DateTime lastOnlineDate)
-    {
-        if (playerIsOnline)
-        {
-            return "Now";
-        }
-        
-        var timeDifference = DateTime.UtcNow - lastOnlineDate;
-
-        if (timeDifference.TotalMinutes < 60)
-        {
-            var minutes = (int)timeDifference.TotalMinutes;
-            return $"{minutes} minutes ago";
-        }
-        
-        if (timeDifference.TotalHours < 24)
-        {
-            var hours = (int)timeDifference.TotalHours;
-            return $"{hours} hours ago";
-        }
-
-        if (timeDifference.TotalDays < 365)
-        {
-            var days = (int)timeDifference.TotalDays;
-            return $"{days} days ago";
-        }
-
-        var years = (int)(timeDifference.TotalDays / 365);
-        var yearDays = (int)(timeDifference.TotalDays % 365);
-        return $"{years} years and {yearDays} days ago";
-    }
-
     private static Color GetStatusColor(bool playerIsOnline) => playerIsOnline ? Color.Success : Color.Default;
+    
+    private void NavigateToPlayerDetails(Guid id) => navigationManager.NavigateTo($"playerDetails/{id}");
 }

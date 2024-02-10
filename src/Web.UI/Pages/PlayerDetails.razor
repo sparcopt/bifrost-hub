@@ -1,0 +1,82 @@
+﻿@page "/PlayerDetails/{id:guid}"
+@using Align = MudBlazor.Align
+@using Color = MudBlazor.Color
+@using Size = MudBlazor.Size
+@using Wolverine
+@using BifrostHub.Application.Features.Players.GetPlayerById
+@using BifrostHub.Application.Features.Players.Dto
+@using BifrostHub.Application.Features.Players.GetSteamUserProfile
+@using BifrostHub.Web.UI.Extensions
+@inject IMessageBus mediator
+
+<MudGrid Class="mb-2" Style="height: 400px">
+    
+    <MudItem xs="12" sm="4" >
+        <MudPaper Class="d-flex flex-column mud-elevation-1 py-4 px-6 rounded-lg gap-1">
+            <MudStack AlignItems="AlignItems.Center" Spacing="0">
+                <MudImage Elevation="25" Height="164" Width="164" Class="rounded-lg" Src="@steamUserProfile?.LocalAvatarImagePath"/>
+                <MudText Align="Align.Center" Typo="Typo.h6">@player?.Name</MudText>
+                <MudStack Row="true" Spacing="1">
+                    <MudIcon Icon="@Icons.Custom.Brands.Steam" Size="Size.Small"/>
+                    <MudLink Href="@steamUserProfile?.ProfileUrl">
+                        <MudText Align="Align.Center" Typo="Typo.body1">@steamUserProfile?.Username</MudText>
+                    </MudLink>
+                </MudStack>
+            </MudStack>
+            <MudDivider Light="true" DividerType="DividerType.FullWidth"/>
+            <MudStack Spacing="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Status:</MudText>
+                    <MudChip Label="true" Color="@(player is { IsOnline: true } ? Color.Success : Color.Default)" Size="Size.Small">
+                        @player?.GetOnlineStatusText()
+                    </MudChip>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Last Online:</MudText>
+                    <MudTooltip Placement="Placement.Top" Text="@player?.GetLastOnlineToolTipText()">
+                        <MudText Typo="Typo.body1">@player?.GetLastOnlineText()</MudText>
+                    </MudTooltip>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Registration date:</MudText>
+                    <MudTooltip Placement="Placement.Top" Text="@player?.CreatedDate.ToString()">
+                        <MudText Typo="Typo.body1">@player?.CreatedDate.ToShortDateString()</MudText>
+                    </MudTooltip>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Linked players:</MudText>
+                    <MudText Typo="Typo.body1">2</MudText>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Sessions:</MudText>
+                    <MudText Typo="Typo.body1">16</MudText>
+                </MudStack>
+                <MudStack Row="true">
+                    <MudText Typo="Typo.body1" Class="grey-text text-darken-1">Total play time:</MudText>
+                    <MudText Typo="Typo.body1">210h</MudText>
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+    
+    <MudItem xs="12" sm="8" Class="d-flex">
+        <MudPaper Class="flex-grow-1 mud-elevation-1 py-4 px-6 rounded-lg align-center" />
+    </MudItem>
+</MudGrid>
+
+@code {
+    private Player player;
+    private SteamUserProfile steamUserProfile;
+    
+    [Parameter]
+    public Guid Id { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var getPlayerQuery = new GetPlayerByIdQuery { Id = Id };
+        player = await mediator.InvokeAsync<Player>(getPlayerQuery);
+
+        var getSteamProfileQuery = new GetSteamUserProfileQuery { SteamId = player.SteamId };
+        steamUserProfile = await mediator.InvokeAsync<SteamUserProfile>(getSteamProfileQuery);
+    }
+}
