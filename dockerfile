@@ -6,6 +6,9 @@ ARG RELEASE_VERSION
 WORKDIR /app
 COPY . .
 RUN dotnet restore BifrostHub.sln --no-cache
+WORKDIR /app/src/Web.UI
+RUN dotnet run --launch-profile CI -- codegen write && dotnet run --launch-profile CI -- codegen test
+WORKDIR /app
 RUN dotnet build --no-restore --configuration Release BifrostHub.sln -p:Version=$RELEASE_VERSION
 
 WORKDIR /app/src/Web.UI

@@ -1,7 +1,7 @@
 using BifrostHub.Application.Extensions;
 using BifrostHub.Infrastructure.Extensions;
-using Hangfire;
 using MudBlazor.Services;
+using Oakton;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ builder.Services
     .AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Host.AddInfraDependencies();
+builder.Host.AddInfraDependencies(typeof(Program));
 builder.Services
     .AddInfraDependencies()
     .AddApplicationDependencies();
@@ -29,11 +29,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-app.UseHangfireDashboard();
+app.UseConfigurableHangfireDashboard();
 
 app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-app.Run();
+// Required to parse Wolverine code generation commands
+return await app.RunOaktonCommands(args);

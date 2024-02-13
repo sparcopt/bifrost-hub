@@ -6,6 +6,8 @@
 .idea
 .vs
 .vscode
+**/steamAvatars
+**/Internal/Generated
 **/bin
 **/obj
 **/.toolstarget
