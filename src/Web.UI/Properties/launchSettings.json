@@ -18,6 +18,16 @@
         "APP_VERSION": "0.0.0-local"
       }
     },
+    "CI": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7199;http://localhost:5134",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "CI",
+        "APP_VERSION": "0.0.0-local"
+      }
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,

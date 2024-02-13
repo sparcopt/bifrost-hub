@@ -7,7 +7,7 @@
 .vs
 .vscode
 **/steamAvatars
-**/Web.UI/Internal
+**/Internal/Generated
 **/bin
 **/obj
 **/.toolstarget

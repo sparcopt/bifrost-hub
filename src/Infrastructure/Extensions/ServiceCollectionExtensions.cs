@@ -122,7 +122,7 @@ public static class ServiceCollectionExtensions
                         BackupStrategy = new CollectionMongoBackupStrategy()
                     },
                     Prefix = "hangfire",
-                    CheckConnection = true
+                    CheckConnection = false
                 };
                 
                 configuration

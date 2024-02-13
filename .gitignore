@@ -21,7 +21,7 @@ appsettings.Development.json
 steamAvatars/
 
 # Wolverine code generation
-**/Web.UI/Internal/
+**/Internal/Generated/
 
 # Build results
 [Dd]ebug/

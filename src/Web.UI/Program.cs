@@ -1,6 +1,5 @@
 using BifrostHub.Application.Extensions;
 using BifrostHub.Infrastructure.Extensions;
-using Hangfire;
 using MudBlazor.Services;
 using Oakton;
 
@@ -30,7 +29,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-app.UseHangfireDashboard();
+app.UseConfigurableHangfireDashboard();
 
 app.UseRouting();
 
