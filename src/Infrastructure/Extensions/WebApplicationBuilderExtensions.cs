@@ -1,6 +1,7 @@
 ﻿namespace BifrostHub.Infrastructure.Extensions;
 
 using Application.Common.Interfaces.Gateways;
+using JasperFx.CodeGeneration;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Wolverine;
@@ -19,7 +20,7 @@ public static class WebApplicationBuilderExtensions
                 
                 // Uses TypeLoadMode.Auto on Development environment
                 // Uses TypeLoadMode.Static on every other environment
-                options.OptimizeArtifactWorkflow();
+                options.OptimizeArtifactWorkflow(TypeLoadMode.Static);
                 
                 options.Discovery.IncludeAssembly(typeof(IOdinEyeApiClient).Assembly);
                 options.Durability.Mode = DurabilityMode.MediatorOnly;
