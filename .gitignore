@@ -20,6 +20,9 @@ mono_crash.*
 appsettings.Development.json
 steamAvatars/
 
+# Wolverine code generation
+**/Web.UI/Internal/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

@@ -7,7 +7,7 @@ using Wolverine;
 
 public static class WebApplicationBuilderExtensions
 {
-    public static ConfigureHostBuilder AddInfraDependencies(this ConfigureHostBuilder builder)
+    public static ConfigureHostBuilder AddInfraDependencies(this ConfigureHostBuilder builder, Type applicationAssemblyType)
     {
         builder
             .UseSerilog((context, configuration) =>
@@ -15,6 +15,12 @@ public static class WebApplicationBuilderExtensions
                 .Enrich.WithProperty("Version", context.Configuration["APP_VERSION"]))
             .UseWolverine(options =>
             {
+                options.ApplicationAssembly = applicationAssemblyType.Assembly;
+                
+                // Uses TypeLoadMode.Auto on Development environment
+                // Uses TypeLoadMode.Static on every other environment
+                options.OptimizeArtifactWorkflow();
+                
                 options.Discovery.IncludeAssembly(typeof(IOdinEyeApiClient).Assembly);
                 options.Durability.Mode = DurabilityMode.MediatorOnly;
             });
