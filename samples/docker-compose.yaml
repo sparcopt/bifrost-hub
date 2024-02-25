@@ -1,17 +1,14 @@
-﻿version: "3.4"
+version: "3.4"
 
 services:
 
   bifrosthub:
-    build:
-      context: .
-      args:
-        RELEASE_VERSION: 0.0.0-local
+    image: sparcopt/bifrosthub:0.0.1-beta.11
     ports:
       - "5134:5134"
     environment:
-      - OdinEye__ApiUrl=${ODINEYE_APIURL}
-      - Steam__ApiKey=${STEAM_APIKEY}
+      - OdinEye__ApiUrl=<ODINEYE API URL>
+      - Steam__ApiKey=<STEAM API KEY>
 
   mongo:
     image: mongo:6.0
@@ -27,7 +24,7 @@ services:
       start_period: 0s
       start_interval: 1s
       retries: 30
-        
+  
   seq:
     image: datalust/seq:latest
     environment:
