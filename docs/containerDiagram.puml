@@ -1,0 +1,32 @@
+@startuml containerDiagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!define MATERIAL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/material
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include DEVICONS/mongodb.puml
+!include DEVICONS/dotnetcore.puml
+!include MATERIAL/storage.puml
+!include FONTAWESOME/steam_symbol.puml
+!include FONTAWESOME/unity.puml
+
+skinparam backgroundColor transparent
+
+Person(user, "User")
+System_Boundary(boundary, "Bifrost Hub Boundary") {
+    Container(web_app, "Bifrost Hub", "C#, Blazor Server, .NET 6.0", "Web Application", $sprite="dotnetcore")
+    Container(logs, "Seq", "Metada and event store", "Storage for structured application logs and traces", $sprite="storage")
+    ContainerDb(nosql, "Database", "MongoDB 6.0.0", "Main application storage", $sprite="mongodb")
+}
+System_Ext(steam_api, "Steam", $sprite="steam_symbol")
+System_Ext(odineye_api, "OdinEye", $sprite="unity")
+
+BiRel(user, web_app, "Uses", "WebSockets")
+Rel(web_app, nosql, "Reads/writes", "MongoDB wire protocol")
+Rel(web_app, logs, "Write logs", "HTTP")
+Rel(web_app, steam_api, "Gets user profile", "HTTPS")
+Rel(web_app, odineye_api, "Gets game server data", "HTTP and WebSockets (protobuf)")
+
+footer drawn with PlantUML v. %version() and C4-PlantUML v. C4Version()
+@enduml

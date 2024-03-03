@@ -17,6 +17,7 @@
 mono_crash.*
 
 # App specific
+*.env
 appsettings.Development.json
 steamAvatars/
 

@@ -1,0 +1,30 @@
+name: Render PlantUML
+
+on:
+  push:
+    paths:
+      - "**.puml"
+  
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Generate SVG Diagrams
+        uses: Timmy/plantuml-action@v1
+        with:
+          args: -v -tsvg docs/*.puml
+
+      - name: Push Local Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Render PlantUML diagrams"
+          file_pattern: '*.svg'
