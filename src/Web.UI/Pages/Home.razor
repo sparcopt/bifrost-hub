@@ -1,4 +1,4 @@
-﻿@page "/counter"
+﻿@page "/"
 @using Color = MudBlazor.Color
 @using Size = MudBlazor.Size
 @using BifrostHub.Application.Features.GameEvents.Dto
@@ -81,7 +81,7 @@
                             <MudText Typo="Typo.caption">HP: @player.GetHealthAsInteger()/@player.GetMaxHealthAsInteger()</MudText>
                             <MudProgressLinear Color="Color.Error" Rounded="true" Size="Size.Small" Value="@player.GetHealthPercentage()"/>
                             <MudText Typo="Typo.caption">STA: @player.GetStaminaAsInteger()</MudText>
-                            <MudProgressLinear Color="Color.Tertiary" Rounded="true" Size="Size.Small" Value="25"/>
+                            @* <MudProgressLinear Color="Color.Tertiary" Rounded="true" Size="Size.Small" Value="25"/> *@
                         </MudStack>
                     </MudPaper>
                 }
@@ -89,11 +89,9 @@
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="6" Class="d-flex flex-column">
-        <MudPaper Class="d-flex flex-column flex-grow-1 dmud-paper mud-elevation-1 py-4 px-6 rounded-lg align-center">
+        <MudPaper Class="d-flex flex-column flex-grow-1 dmud-paper mud-elevation-1 py-4 px-6 rounded-lg">
             <MudText Typo="Typo.h5">Chat</MudText>
-            <MudPaper Elevation="0" Class="flex-grow-1 dmud-paper gap-2 rounded-lg d-flex align-center" Style="background-color: var(--mud-palette-dark)" >
-                
-            </MudPaper>
+            @* <MudPaper Elevation="0" Class="flex-grow-1 dmud-paper gap-2 rounded-lg d-flex align-center" Style="background-color: var(--mud-palette-dark)" /> *@
         </MudPaper>
     </MudItem>
 </MudGrid>
