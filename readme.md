@@ -16,7 +16,7 @@
 <p align="center">
     <a href="readme.md#ℹ%EF%B8%8F-overview">Overview</a> • 
     <a href="readme.md#-features">Features</a> • 
-    <a href="readme.md#-screenshots">Screenshots</a> •
+    <a href="readme.md#-demos">Demos</a> •
     <a href="readme.md#getting-started">Getting started</a> •
     <a href="readme.md#%EF%B8%8F-development-notes">Development notes</a> •
     <a href="readme.md#-roadmap">Roadmap</a>
@@ -51,7 +51,10 @@ While its primary audience comprises Valheim server owners, the application feat
     - Raids
     - And much more
 
-## 📸 Screenshots
+## 📸 Demos
+
+![Alt text](docs/ui-demo.gif)
+![Alt text](docs/stream-demo.gif)
 
 ## 📦Getting started
 
