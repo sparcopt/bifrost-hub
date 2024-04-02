@@ -27,8 +27,8 @@
 
 ## ℹ️ Overview
 
-Bifrost Hub is a free, open-source web UI to monitor and manage Valheim dedicated servers. It provides a set of minimalistic and detailed UI interfaces that display relevant info about the connected server, the game world, its players and real time data such as game events.
-While its primary audience comprises Valheim server owners, the application features can also be made accessible and used by server players and other interested users.
+Bifrost Hub is a free, open-source web UI to monitor and manage Valheim dedicated servers. It provides a set of minimalistic and detailed user interfaces that display relevant info about the connected server, the game world, its players and real time data such as game events.
+While its primary audience targets Valheim server owners, the application features can also be made accessible and used by server players and other interested users.
 
 ## ✨ Features
 
